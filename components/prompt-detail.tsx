@@ -3,16 +3,17 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Copy, Check, ArrowLeft, Share2 } from "lucide-react"
+import { Copy, Check, ArrowLeft, Share2, User, Shield, Twitter, Linkedin, Github, Globe } from "lucide-react"
 import Link from "next/link"
 import type { Prompt } from "@/lib/prompts-data"
-import type { FirestorePrompt } from "@/lib/firestore-service"
+import type { FirestorePrompt, UserProfile } from "@/lib/firestore-service"
 
 interface PromptDetailProps {
   prompt: Prompt | FirestorePrompt
+  creator?: UserProfile | null
 }
 
-export function PromptDetail({ prompt }: PromptDetailProps) {
+export function PromptDetail({ prompt, creator }: PromptDetailProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -79,6 +80,34 @@ export function PromptDetail({ prompt }: PromptDetailProps) {
                 : new Date(prompt.createdAt as string).toLocaleDateString()
             }
           </span>
+          {creator && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm text-muted-foreground">by</span>
+              <Badge
+                variant={creator.isAdmin ? "default" : "secondary"}
+                className={`brutalist-border font-bold text-xs ${
+                  creator.isAdmin 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-muted text-muted-foreground"
+                }`}
+              >
+                {creator.isAdmin ? (
+                  <>
+                    <Shield className="h-3 w-3 mr-1" />
+                    ADMIN
+                  </>
+                ) : (
+                  <>
+                    <User className="h-3 w-3 mr-1" />
+                    USER
+                  </>
+                )}
+              </Badge>
+              <span className="text-sm font-medium">
+                {creator.displayName || creator.email}
+              </span>
+            </div>
+          )}
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">{prompt.title}</h1>
@@ -190,6 +219,131 @@ export function PromptDetail({ prompt }: PromptDetailProps) {
           </ul>
         </div>
       </section>
+
+      {/* Creator Profile Section */}
+      {creator && (
+        <section className="mb-8">
+          <div className="brutalist-border bg-card p-6 brutalist-shadow">
+            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              {creator.isAdmin ? <Shield className="h-5 w-5" /> : <User className="h-5 w-5" />}
+              ABOUT THE CREATOR
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Creator Basic Info */}
+              <div className="flex items-start gap-4">
+                {creator.avatar && (
+                  <div className="brutalist-border bg-background p-1 brutalist-shadow-sm">
+                    <img
+                      src={creator.avatar}
+                      alt={creator.displayName || "Creator"}
+                      className="w-16 h-16 object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                      }}
+                    />
+                  </div>
+                )}
+                
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h4 className="text-lg font-bold">
+                      {creator.displayName || creator.email}
+                    </h4>
+                    <Badge
+                      variant={creator.isAdmin ? "default" : "secondary"}
+                      className={`brutalist-border font-bold text-xs ${
+                        creator.isAdmin 
+                          ? "bg-primary text-primary-foreground" 
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {creator.isAdmin ? (
+                        <>
+                          <Shield className="h-3 w-3 mr-1" />
+                          ADMIN
+                        </>
+                      ) : (
+                        <>
+                          <User className="h-3 w-3 mr-1" />
+                          USER
+                        </>
+                      )}
+                    </Badge>
+                  </div>
+                  
+                  {creator.bio && (
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                      {creator.bio}
+                    </p>
+                  )}
+
+                  {/* Social Media Links */}
+                  {creator.socialMedia && (
+                    <div className="flex flex-wrap gap-2">
+                      {creator.socialMedia.twitter && (
+                        <a
+                          href={creator.socialMedia.twitter.startsWith('http') 
+                            ? creator.socialMedia.twitter 
+                            : `https://twitter.com/${creator.socialMedia.twitter.replace('@', '')}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="brutalist-border bg-background hover:bg-muted p-2 brutalist-shadow-sm transition-all transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                        >
+                          <Twitter className="h-4 w-4" />
+                        </a>
+                      )}
+                      
+                      {creator.socialMedia.linkedin && (
+                        <a
+                          href={creator.socialMedia.linkedin.startsWith('http') 
+                            ? creator.socialMedia.linkedin 
+                            : `https://linkedin.com/in/${creator.socialMedia.linkedin}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="brutalist-border bg-background hover:bg-muted p-2 brutalist-shadow-sm transition-all transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                        >
+                          <Linkedin className="h-4 w-4" />
+                        </a>
+                      )}
+                      
+                      {creator.socialMedia.github && (
+                        <a
+                          href={creator.socialMedia.github.startsWith('http') 
+                            ? creator.socialMedia.github 
+                            : `https://github.com/${creator.socialMedia.github}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="brutalist-border bg-background hover:bg-muted p-2 brutalist-shadow-sm transition-all transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                        >
+                          <Github className="h-4 w-4" />
+                        </a>
+                      )}
+                      
+                      {creator.socialMedia.website && (
+                        <a
+                          href={creator.socialMedia.website.startsWith('http') 
+                            ? creator.socialMedia.website 
+                            : `https://${creator.socialMedia.website}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="brutalist-border bg-background hover:bg-muted p-2 brutalist-shadow-sm transition-all transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+                        >
+                          <Globe className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </article>
   )
 }

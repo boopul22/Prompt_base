@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Zap, User, LogOut } from "lucide-react"
+import { Menu, X, Zap, User, LogOut, Settings } from "lucide-react"
 import { useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { LoginDialog } from "@/components/auth/login-dialog"
@@ -24,6 +24,7 @@ export function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const { user, userProfile, logout } = useAuth()
 
   return (
@@ -77,25 +78,52 @@ export function Navbar() {
                   </Button>
                 )}
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="brutalist-border brutalist-shadow-sm ml-2 p-2"
-                    >
-                      <User className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <div className="px-2 py-1.5 text-sm font-medium">
-                      {userProfile?.displayName || user.email}
-                    </div>
-                    <DropdownMenuItem onClick={() => logout()}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    className="brutalist-border brutalist-shadow-sm ml-2 p-2 hover:bg-muted"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  >
+                    <User className="h-4 w-4" />
+                  </Button>
+                  
+                  {dropdownOpen && (
+                    <>
+                      {/* Backdrop */}
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setDropdownOpen(false)}
+                      />
+                      
+                      {/* Dropdown content */}
+                      <div className="absolute right-0 mt-2 w-56 bg-background brutalist-border brutalist-shadow-sm z-50">
+                        <div className="px-3 py-2 text-sm font-medium border-b">
+                          {userProfile?.displayName || user.email}
+                        </div>
+                        <div className="py-1">
+                          <Link 
+                            href="/profile"
+                            className="flex items-center px-3 py-2 text-sm hover:bg-muted"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            <Settings className="mr-2 h-4 w-4" />
+                            Profile Settings
+                          </Link>
+                          <button 
+                            className="flex items-center w-full px-3 py-2 text-sm hover:bg-muted text-left"
+                            onClick={() => {
+                              setDropdownOpen(false)
+                              logout()
+                            }}
+                          >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </>
             ) : (
               <Button

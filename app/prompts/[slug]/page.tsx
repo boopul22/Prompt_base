@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
 import { PromptDetail } from "@/components/prompt-detail"
 import { RelatedPrompts } from "@/components/related-prompts"
-import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
+import { promptsService, FirestorePrompt, usersService, UserProfile } from "@/lib/firestore-service"
 
 interface PromptPageProps {
   params: {
@@ -14,6 +14,7 @@ interface PromptPageProps {
 
 export default function PromptPage({ params }: PromptPageProps) {
   const [prompt, setPrompt] = useState<FirestorePrompt | null>(null)
+  const [creator, setCreator] = useState<UserProfile | null>(null)
   const [relatedPrompts, setRelatedPrompts] = useState<FirestorePrompt[]>([])
   const [loading, setLoading] = useState(true)
   const [notFoundError, setNotFoundError] = useState(false)
@@ -29,6 +30,12 @@ export default function PromptPage({ params }: PromptPageProps) {
         }
 
         setPrompt(foundPrompt)
+
+        // Get creator details
+        if (foundPrompt.createdBy) {
+          const creatorData = await usersService.getUserById(foundPrompt.createdBy)
+          setCreator(creatorData)
+        }
 
         // Get related prompts from the same category
         const allPrompts = await promptsService.getApprovedPrompts(foundPrompt.category)
@@ -65,7 +72,7 @@ export default function PromptPage({ params }: PromptPageProps) {
   return (
     <main className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-3 md:px-4 py-6 md:py-8">
-        <PromptDetail prompt={prompt} />
+        <PromptDetail prompt={prompt} creator={creator} />
         {relatedPrompts.length > 0 && <RelatedPrompts prompts={relatedPrompts} />}
       </div>
     </main>

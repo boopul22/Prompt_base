@@ -36,6 +36,14 @@ export interface UserProfile {
   uid: string
   email: string
   displayName?: string
+  bio?: string
+  avatar?: string
+  socialMedia?: {
+    twitter?: string
+    linkedin?: string
+    github?: string
+    website?: string
+  }
   isAdmin: boolean
   createdAt: Timestamp
   updatedAt?: Timestamp
@@ -174,6 +182,20 @@ export const usersService = {
     const snapshot = await getDoc(docRef)
     if (!snapshot.exists()) return null
     return { id: snapshot.id, ...snapshot.data() } as UserProfile
+  },
+
+  // Get user by ID
+  async getUserById(uid: string): Promise<UserProfile | null> {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', uid))
+      if (userDoc.exists()) {
+        return { ...userDoc.data(), uid: userDoc.id } as UserProfile
+      }
+      return null
+    } catch (error) {
+      console.error('Error fetching user:', error)
+      return null
+    }
   },
 
   // Get all users (admin only)

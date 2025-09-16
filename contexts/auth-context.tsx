@@ -29,6 +29,7 @@ interface AuthContextType {
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
   logout: () => Promise<void>
+  refreshUserProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -118,6 +119,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth)
   }
 
+  const refreshUserProfile = async () => {
+    if (!user) return
+    
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid))
+      if (userDoc.exists()) {
+        const data = userDoc.data()
+        const profile: UserProfile = {
+          uid: user.uid,
+          email: user.email!,
+          displayName: data.displayName,
+          isAdmin: data.isAdmin || false,
+          createdAt: data.createdAt?.toDate() || new Date()
+        }
+        setUserProfile(profile)
+      }
+    } catch (error) {
+      console.error('Error refreshing user profile:', error)
+    }
+  }
+
   const value: AuthContextType = {
     user,
     userProfile,
@@ -125,7 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,
-    logout
+    logout,
+    refreshUserProfile
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
