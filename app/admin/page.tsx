@@ -1,6 +1,7 @@
 import { AddPromptForm } from "@/components/add-prompt-form"
 import { AdminPromptList } from "@/components/admin-prompt-list"
 import { AdminUsersList } from "@/components/admin-users-list"
+import { AdminCategoriesList } from "@/components/admin-categories-list"
 import { AdminStats } from "@/components/admin-stats"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -35,13 +36,21 @@ export default function AdminPage() {
           <AdminStats />
         </section>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mb-8">
           {/* Add New Prompt Form */}
           <section>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">ADD NEW PROMPT</h2>
             <AddPromptForm />
           </section>
 
+          {/* Category Management */}
+          <section>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE CATEGORIES</h2>
+            <AdminCategoriesList />
+          </section>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
           {/* Existing Prompts List */}
           <section>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE PROMPTS</h2>

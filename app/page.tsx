@@ -1,42 +1,51 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { categories } from "@/lib/prompts-data"
 import { PromptCard } from "@/components/prompt-card"
 import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
 import { migrateMockDataToFirestore } from "@/lib/migrate-data"
+import { getCategories } from "@/lib/migrate-categories"
+import { Category } from "@/lib/category-service"
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const loadPrompts = async () => {
+    const loadData = async () => {
       try {
-        // Load approved prompts directly (skip migration for now)
-        const approvedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
+        // Load categories and prompts in parallel
+        const [dbCategories, approvedPrompts] = await Promise.all([
+          getCategories(),
+          promptsService.getApprovedPrompts(selectedCategory)
+        ])
+
+        console.log('Loaded categories:', dbCategories.length)
         console.log('Loaded prompts:', approvedPrompts.length, 'Category:', selectedCategory)
+        
+        setCategories(dbCategories)
         setPrompts(approvedPrompts)
         
-        // Only migrate if no prompts exist
+        // Only migrate prompts if no prompts exist
         if (approvedPrompts.length === 0) {
           console.log('No prompts found, running migration...')
           await migrateMockDataToFirestore()
-          // Reload after migration
+          // Reload prompts after migration
           const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
           setPrompts(migratedPrompts)
         }
       } catch (error) {
-        console.error('Error loading prompts:', error)
+        console.error('Error loading data:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    loadPrompts()
+    loadData()
   }, [selectedCategory])
 
   return (
@@ -51,7 +60,7 @@ export default function HomePage() {
           </p>
 
           <CategoryFilter
-            categories={categories}
+            categories={['All', ...categories.map(cat => cat.name)]}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
           />

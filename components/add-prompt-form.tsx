@@ -2,16 +2,17 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { categories } from "@/lib/prompts-data"
 import { Plus, Check } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { promptsService, generateSlug } from "@/lib/firestore-service"
+import { getCategories } from "@/lib/migrate-categories"
+import { Category } from "@/lib/category-service"
 import { toast } from "react-hot-toast"
 
 export function AddPromptForm() {
@@ -24,7 +25,24 @@ export function AddPromptForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const { user, userProfile } = useAuth()
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const dbCategories = await getCategories()
+        setCategories(dbCategories)
+      } catch (error) {
+        console.error('Error loading categories:', error)
+      } finally {
+        setCategoriesLoading(false)
+      }
+    }
+
+    loadCategories()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -140,16 +158,19 @@ export function AddPromptForm() {
         </Label>
         <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
           <SelectTrigger className="brutalist-border bg-background">
-            <SelectValue placeholder="Select a category" />
+            <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Select a category"} />
           </SelectTrigger>
           <SelectContent>
-            {categories
-              .filter((cat) => cat !== "All")
-              .map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
+                {category.description && (
+                  <span className="text-xs text-muted-foreground ml-2">
+                    - {category.description.substring(0, 50)}...
+                  </span>
+                )}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
