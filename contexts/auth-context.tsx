@@ -53,6 +53,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               uid: user.uid,
               email: user.email!,
               displayName: data.displayName || user.displayName,
+              bio: data.bio,
+              avatar: data.avatar || user.photoURL, // Use Google avatar as fallback
+              socialMedia: data.socialMedia,
               isAdmin: data.isAdmin || false,
               createdAt: data.createdAt?.toDate() || new Date()
             })
@@ -62,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               uid: user.uid,
               email: user.email!,
               displayName: user.displayName || undefined,
+              avatar: user.photoURL || undefined, // Automatically get Google avatar
               isAdmin: false,
               createdAt: new Date()
             }
@@ -77,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             uid: user.uid,
             email: user.email!,
             displayName: user.displayName || undefined,
+            avatar: user.photoURL || undefined, // Include Google avatar in fallback too
             isAdmin: false,
             createdAt: new Date()
           })
@@ -103,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       uid: result.user.uid,
       email: result.user.email!,
       displayName,
+      avatar: result.user.photoURL || undefined, // Include Google avatar if available
       isAdmin: false,
       createdAt: new Date()
     }
@@ -130,6 +136,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           uid: user.uid,
           email: user.email!,
           displayName: data.displayName,
+          bio: data.bio,
+          avatar: data.avatar || user.photoURL, // Use Google avatar as fallback
+          socialMedia: data.socialMedia,
           isAdmin: data.isAdmin || false,
           createdAt: data.createdAt?.toDate() || new Date()
         }

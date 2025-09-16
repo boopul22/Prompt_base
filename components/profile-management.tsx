@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Save, User, Shield, Twitter, Linkedin, Github, Globe, Mail } from "lucide-react"
+import { Save, User, Shield, Twitter, Linkedin, Github, Globe, Mail, Camera } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { usersService } from "@/lib/firestore-service"
 import { toast } from "react-hot-toast"
@@ -16,6 +16,7 @@ import { toast } from "react-hot-toast"
 export function ProfileManagement() {
   const { user, userProfile, refreshUserProfile } = useAuth()
   const [loading, setLoading] = useState(false)
+  const [useGoogleAvatar, setUseGoogleAvatar] = useState(true)
   const [formData, setFormData] = useState({
     displayName: "",
     bio: "",
@@ -30,10 +31,13 @@ export function ProfileManagement() {
 
   useEffect(() => {
     if (userProfile) {
+      const hasCustomAvatar = userProfile.avatar && userProfile.avatar !== user?.photoURL
+      setUseGoogleAvatar(!hasCustomAvatar)
+      
       setFormData({
         displayName: userProfile.displayName || "",
         bio: userProfile.bio || "",
-        avatar: userProfile.avatar || "",
+        avatar: hasCustomAvatar ? userProfile.avatar || "" : "",
         socialMedia: {
           twitter: userProfile.socialMedia?.twitter || "",
           linkedin: userProfile.socialMedia?.linkedin || "",
@@ -42,7 +46,7 @@ export function ProfileManagement() {
         }
       })
     }
-  }, [userProfile])
+  }, [userProfile, user])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,17 +54,45 @@ export function ProfileManagement() {
 
     setLoading(true)
     try {
-      await usersService.updateUserProfile(user.uid, {
-        displayName: formData.displayName.trim() || undefined,
-        bio: formData.bio.trim() || undefined,
-        avatar: formData.avatar.trim() || undefined,
-        socialMedia: {
-          twitter: formData.socialMedia.twitter.trim() || undefined,
-          linkedin: formData.socialMedia.linkedin.trim() || undefined,
-          github: formData.socialMedia.github.trim() || undefined,
-          website: formData.socialMedia.website.trim() || undefined
-        }
-      })
+      const avatarToSave = useGoogleAvatar 
+        ? user.photoURL || null 
+        : formData.avatar.trim() || null
+
+      // Filter out undefined values and empty strings
+      const updateData: any = {}
+      
+      if (formData.displayName.trim()) {
+        updateData.displayName = formData.displayName.trim()
+      }
+      
+      if (formData.bio.trim()) {
+        updateData.bio = formData.bio.trim()
+      }
+      
+      if (avatarToSave) {
+        updateData.avatar = avatarToSave
+      }
+
+      // Only include social media fields that have values
+      const socialMedia: any = {}
+      if (formData.socialMedia.twitter.trim()) {
+        socialMedia.twitter = formData.socialMedia.twitter.trim()
+      }
+      if (formData.socialMedia.linkedin.trim()) {
+        socialMedia.linkedin = formData.socialMedia.linkedin.trim()
+      }
+      if (formData.socialMedia.github.trim()) {
+        socialMedia.github = formData.socialMedia.github.trim()
+      }
+      if (formData.socialMedia.website.trim()) {
+        socialMedia.website = formData.socialMedia.website.trim()
+      }
+      
+      if (Object.keys(socialMedia).length > 0) {
+        updateData.socialMedia = socialMedia
+      }
+
+      await usersService.updateUserProfile(user.uid, updateData)
       
       await refreshUserProfile()
       toast.success("Profile updated successfully!")
@@ -95,9 +127,23 @@ export function ProfileManagement() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">{userProfile?.displayName || "No display name"}</p>
-              <p className="text-sm text-muted-foreground">{userProfile?.email}</p>
+            <div className="flex items-center gap-3">
+              {(userProfile?.avatar || user?.photoURL) && (
+                <div className="brutalist-border bg-background p-1 brutalist-shadow-sm">
+                  <img
+                    src={userProfile?.avatar || user?.photoURL || ""}
+                    alt={userProfile?.displayName || "Profile"}
+                    className="w-12 h-12 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                </div>
+              )}
+              <div>
+                <p className="font-medium">{userProfile?.displayName || "No display name"}</p>
+                <p className="text-sm text-muted-foreground">{userProfile?.email}</p>
+              </div>
             </div>
             <Badge
               variant={userProfile?.isAdmin ? "default" : "secondary"}
@@ -163,19 +209,54 @@ export function ProfileManagement() {
               </div>
 
               <div>
-                <Label htmlFor="avatar" className="text-sm font-bold">
-                  AVATAR URL
+                <Label className="text-sm font-bold flex items-center gap-2">
+                  <Camera className="h-4 w-4" />
+                  PROFILE PICTURE
                 </Label>
-                <Input
-                  id="avatar"
-                  value={formData.avatar}
-                  onChange={(e) => setFormData(prev => ({ ...prev, avatar: e.target.value }))}
-                  placeholder="https://example.com/avatar.jpg"
-                  className="brutalist-border"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Link to your profile picture
-                </p>
+                
+                {/* Google Avatar Option */}
+                {user?.photoURL && (
+                  <div className="mt-2 p-3 brutalist-border bg-muted">
+                    <div className="flex items-center gap-3 mb-2">
+                      <img
+                        src={user.photoURL}
+                        alt="Google Profile"
+                        className="w-10 h-10 object-cover brutalist-border bg-background p-1"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">Google Profile Picture</p>
+                        <p className="text-xs text-muted-foreground">Use your Google account photo</p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={useGoogleAvatar}
+                        onChange={(e) => setUseGoogleAvatar(e.target.checked)}
+                        className="brutalist-border"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Custom Avatar URL */}
+                <div className={`mt-2 ${useGoogleAvatar ? 'opacity-50' : ''}`}>
+                  <Label htmlFor="avatar" className="text-sm font-medium">
+                    Custom Avatar URL
+                  </Label>
+                  <Input
+                    id="avatar"
+                    value={formData.avatar}
+                    onChange={(e) => setFormData(prev => ({ ...prev, avatar: e.target.value }))}
+                    placeholder="https://example.com/avatar.jpg"
+                    className="brutalist-border"
+                    disabled={useGoogleAvatar}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {useGoogleAvatar ? 'Disabled while using Google avatar' : 'Link to your custom profile picture'}
+                  </p>
+                </div>
               </div>
             </div>
 
