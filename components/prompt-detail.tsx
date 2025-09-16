@@ -52,8 +52,8 @@ export function PromptDetail({ prompt }: PromptDetailProps) {
       <div className="mb-8">
         <Button
           asChild
-          variant="outline"
-          className="brutalist-border brutalist-shadow-sm bg-background hover:bg-muted font-bold"
+          variant="brutalist"
+          className="font-bold"
         >
           <Link href="/">
             <ArrowLeft className="h-4 w-4 mr-2" />

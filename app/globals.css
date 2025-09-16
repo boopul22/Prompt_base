@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+
 
 :root {
   /* Updated to Neo-Brutalism color scheme with bold colors and high contrast */
@@ -40,41 +40,7 @@
   --sidebar-ring: #8b5cf6;
 }
 
-.dark {
-  /* Dark mode with inverted Neo-Brutalism colors */
-  --background: #1f2937;
-  --foreground: #ffffff;
-  --card: #374151;
-  --card-foreground: #ffffff;
-  --popover: #1f2937;
-  --popover-foreground: #ffffff;
-  --primary: #a78bfa;
-  --primary-foreground: #1f2937;
-  --secondary: #9ca3af;
-  --secondary-foreground: #1f2937;
-  --muted: #374151;
-  --muted-foreground: #9ca3af;
-  --accent: #fb923c;
-  --accent-foreground: #1f2937;
-  --destructive: #f87171;
-  --destructive-foreground: #1f2937;
-  --border: #ffffff;
-  --input: #374151;
-  --ring: #a78bfa;
-  --chart-1: #fb923c;
-  --chart-2: #f87171;
-  --chart-3: #9ca3af;
-  --chart-4: #ffffff;
-  --chart-5: #a78bfa;
-  --sidebar: #1f2937;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #a78bfa;
-  --sidebar-primary-foreground: #1f2937;
-  --sidebar-accent: #fb923c;
-  --sidebar-accent-foreground: #1f2937;
-  --sidebar-border: #ffffff;
-  --sidebar-ring: #a78bfa;
-}
+
 
 @theme inline {
   --font-sans: var(--font-space-grotesk);

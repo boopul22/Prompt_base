@@ -1,62 +1,50 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Space_Grotesk } from "next/font/google"
-import { DM_Sans } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { Suspense } from "react"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import "./globals.css"
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space-grotesk",
-  weight: ["400", "500", "600", "700"],
-})
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
-  weight: ["400", "500", "600", "700"],
-})
+import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "Viral Prompts - Share AI Prompts That Go Viral",
-  description:
-    "Discover and share the most effective AI prompts. Copy, use, and create viral content with our curated collection of AI prompts.",
-  generator: "v0.app",
-  keywords: ["AI prompts", "viral content", "ChatGPT prompts", "AI tools", "content creation"],
-  authors: [{ name: "Viral Prompts" }],
-  openGraph: {
-    title: "Viral Prompts - Share AI Prompts That Go Viral",
-    description:
-      "Discover and share the most effective AI prompts. Copy, use, and create viral content with our curated collection of AI prompts.",
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Viral Prompts - Share AI Prompts That Go Viral",
-    description:
-      "Discover and share the most effective AI prompts. Copy, use, and create viral content with our curated collection of AI prompts.",
-  },
-}
+  title: "PromptBase",
+  description: "Find the best AI prompts.",
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
-        <Suspense fallback={<div>Loading...</div>}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={GeistSans.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          disableTransitionOnChange
+        >
           <Navbar />
           {children}
           <Footer />
-        </Suspense>
-        <Analytics />
+          <Toaster />
+        </ThemeProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                  }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
-  )
+  );
 }
