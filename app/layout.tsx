@@ -8,8 +8,68 @@ import { Footer } from "@/components/footer";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "PromptBase",
-  description: "Find the best AI prompts.",
+  title: {
+    default: "Free PromptBase - Viral AI Prompts Collection",
+    template: "%s | Free PromptBase"
+  },
+  description: "Discover thousands of viral AI prompts for ChatGPT, Claude, and other AI tools. Free collection of tested prompts for content creation, marketing, coding, and business growth.",
+  keywords: [
+    "AI prompts",
+    "ChatGPT prompts",
+    "Claude prompts",
+    "viral prompts",
+    "AI content creation",
+    "prompt engineering",
+    "free AI prompts",
+    "prompt library",
+    "AI marketing",
+    "AI writing prompts",
+    "prompt collection",
+    "AI prompt database"
+  ],
+  authors: [{ name: "Free PromptBase Team" }],
+  creator: "Free PromptBase",
+  publisher: "Free PromptBase",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    title: "Free PromptBase - Viral AI Prompts Collection",
+    description: "Discover thousands of viral AI prompts for ChatGPT, Claude, and other AI tools. Free collection of tested prompts for content creation, marketing, coding, and business growth.",
+    url: "/",
+    siteName: "Free PromptBase",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Free PromptBase - Viral AI Prompts Collection"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free PromptBase - Viral AI Prompts Collection",
+    description: "Discover thousands of viral AI prompts for ChatGPT, Claude, and other AI tools. Free collection of tested prompts.",
+    images: ["/og-image.png"],
+    site: "@freepromptbase"
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code-here",
+  }
 };
 
 export default function RootLayout({

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { PromptCard } from "@/components/prompt-card"
 import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
+import { StructuredData } from "@/components/structured-data"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
 import { migrateMockDataToFirestore } from "@/lib/migrate-data"
 import { getCategories } from "@/lib/migrate-categories"
@@ -50,6 +51,7 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-background">
+      <StructuredData isHomepage={true} />
       <HeroSection />
 
       <section id="categories" className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">

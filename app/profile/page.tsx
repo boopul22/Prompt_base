@@ -2,6 +2,16 @@ import { ProfileManagement } from "@/components/profile-management"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Profile Settings",
+  description: "Manage your Free PromptBase profile, bio, social media links, and avatar settings.",
+  robots: {
+    index: false,
+    follow: false
+  }
+}
 
 export default function ProfilePage() {
   return (

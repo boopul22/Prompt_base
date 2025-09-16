@@ -1,10 +1,7 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
-import { PromptDetail } from "@/components/prompt-detail"
-import { RelatedPrompts } from "@/components/related-prompts"
-import { promptsService, FirestorePrompt, usersService, UserProfile } from "@/lib/firestore-service"
+import { PromptDetailClient } from "@/components/prompt-detail-client"
+import { promptsService, usersService } from "@/lib/firestore-service"
+import type { Metadata } from "next"
 
 interface PromptPageProps {
   params: {
@@ -12,69 +9,103 @@ interface PromptPageProps {
   }
 }
 
-export default function PromptPage({ params }: PromptPageProps) {
-  const [prompt, setPrompt] = useState<FirestorePrompt | null>(null)
-  const [creator, setCreator] = useState<UserProfile | null>(null)
-  const [relatedPrompts, setRelatedPrompts] = useState<FirestorePrompt[]>([])
-  const [loading, setLoading] = useState(true)
-  const [notFoundError, setNotFoundError] = useState(false)
-
-  useEffect(() => {
-    async function loadPrompt() {
-      try {
-        const foundPrompt = await promptsService.getPromptBySlug(params.slug)
-        
-        if (!foundPrompt) {
-          setNotFoundError(true)
-          return
-        }
-
-        setPrompt(foundPrompt)
-
-        // Get creator details
-        if (foundPrompt.createdBy) {
-          const creatorData = await usersService.getUserById(foundPrompt.createdBy)
-          setCreator(creatorData)
-        }
-
-        // Get related prompts from the same category
-        const allPrompts = await promptsService.getApprovedPrompts(foundPrompt.category)
-        const related = allPrompts.filter((p) => p.id !== foundPrompt.id).slice(0, 3)
-        setRelatedPrompts(related)
-      } catch (error) {
-        console.error('Error loading prompt:', error)
-        setNotFoundError(true)
-      } finally {
-        setLoading(false)
+export async function generateMetadata({ params }: PromptPageProps): Promise<Metadata> {
+  try {
+    const prompt = await promptsService.getPromptBySlug(params.slug)
+    
+    if (!prompt) {
+      return {
+        title: "Prompt Not Found",
+        description: "The requested AI prompt could not be found."
       }
     }
 
-    loadPrompt()
-  }, [params.slug])
+    const title = `${prompt.title} - Free AI Prompt`
+    const description = `${prompt.description} - Get this viral AI prompt for ${prompt.category.toLowerCase()}. Copy, customize and create amazing content with this tested prompt.`
+    const url = `/prompts/${params.slug}`
 
-  if (loading) {
+    return {
+      title,
+      description,
+      keywords: [
+        ...prompt.tags,
+        `${prompt.category} prompts`,
+        "AI prompt",
+        "ChatGPT prompt",
+        "viral prompt",
+        "free AI prompt",
+        prompt.category.toLowerCase()
+      ],
+      alternates: {
+        canonical: url
+      },
+      openGraph: {
+        title,
+        description,
+        url,
+        type: "article",
+        siteName: "Free PromptBase",
+        images: [
+          {
+            url: "/og-image.png",
+            width: 1200,
+            height: 630,
+            alt: prompt.title
+          }
+        ]
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/og-image.png"]
+      },
+      other: {
+        "article:author": "Free PromptBase",
+        "article:section": prompt.category,
+        "article:tag": prompt.tags.join(", ")
+      }
+    }
+  } catch (error) {
+    console.error("Error generating metadata:", error)
+    return {
+      title: "AI Prompt | Free PromptBase",
+      description: "Discover viral AI prompts for content creation and business growth."
+    }
+  }
+}
+
+export default async function PromptPage({ params }: PromptPageProps) {
+  try {
+    const prompt = await promptsService.getPromptBySlug(params.slug)
+    
+    if (!prompt) {
+      notFound()
+    }
+
+    // Get creator details
+    let creator = null
+    if (prompt.createdBy) {
+      creator = await usersService.getUserById(prompt.createdBy)
+    }
+
+    // Get related prompts
+    const allPrompts = await promptsService.getApprovedPrompts(prompt.category)
+    const relatedPrompts = allPrompts.filter((p) => p.id !== prompt.id).slice(0, 3)
+
     return (
       <main className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-3 md:px-4 py-6 md:py-8">
-          <div className="brutalist-border bg-card p-8 brutalist-shadow text-center">
-            <h3 className="text-2xl font-bold mb-2">LOADING...</h3>
-            <p className="text-muted-foreground">Fetching prompt details...</p>
-          </div>
+          <PromptDetailClient 
+            prompt={prompt} 
+            creator={creator} 
+            relatedPrompts={relatedPrompts}
+          />
         </div>
       </main>
     )
-  }
-
-  if (notFoundError || !prompt) {
+  } catch (error) {
+    console.error('Error loading prompt:', error)
     notFound()
   }
-
-  return (
-    <main className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-3 md:px-4 py-6 md:py-8">
-        <PromptDetail prompt={prompt} creator={creator} />
-        {relatedPrompts.length > 0 && <RelatedPrompts prompts={relatedPrompts} />}
-      </div>
-    </main>
-  )
 }

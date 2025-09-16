@@ -4,8 +4,23 @@ import { ArrowLeft, Zap, Users, Target, Rocket } from "lucide-react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "About - Viral Prompts",
-  description: "Learn about Viral Prompts, the ultimate collection of AI prompts that help you create viral content.",
+  title: "About Free PromptBase - AI Prompt Collection",
+  description: "Learn about Free PromptBase, the ultimate free collection of viral AI prompts for ChatGPT, Claude, and other AI tools. Discover our mission to democratize AI prompt engineering.",
+  keywords: [
+    "about free promptbase",
+    "AI prompt collection",
+    "viral AI prompts",
+    "prompt engineering",
+    "ChatGPT prompts",
+    "free AI tools",
+    "AI content creation"
+  ],
+  openGraph: {
+    title: "About Free PromptBase - AI Prompt Collection",
+    description: "Learn about Free PromptBase, the ultimate free collection of viral AI prompts for ChatGPT, Claude, and other AI tools.",
+    url: "/about",
+    type: "website"
+  }
 }
 
 export default function AboutPage() {
