@@ -10,6 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { categories } from "@/lib/prompts-data"
 import { Plus, Check } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
+import { promptsService, generateSlug } from "@/lib/firestore-service"
+import { toast } from "react-hot-toast"
 
 export function AddPromptForm() {
   const [formData, setFormData] = useState({
@@ -21,43 +24,73 @@ export function AddPromptForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const { user, userProfile } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!user) {
+      toast.error('Please sign in to add prompts')
+      return
+    }
+
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const tags = formData.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+      const slug = generateSlug(formData.title)
+      
+      // For admins, prompts are auto-approved. For regular users, they're pending
+      const status = userProfile?.isAdmin ? 'approved' : 'pending'
 
-    console.log("New prompt submitted:", {
-      ...formData,
-      tags: formData.tags.split(",").map((tag) => tag.trim()),
-      slug: formData.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, ""),
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString().split("T")[0],
-    })
+      const promptData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        fullPrompt: formData.fullPrompt,
+        slug,
+        tags,
+        status,
+        createdBy: user.uid,
+        ...(userProfile?.isAdmin && { approvedBy: user.uid })
+      }
 
-    setIsSubmitting(false)
-    setSubmitted(true)
+      await promptsService.createPrompt(promptData as any)
 
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      setFormData({
-        title: "",
-        description: "",
-        category: "",
-        fullPrompt: "",
-        tags: "",
-      })
-      setSubmitted(false)
-    }, 2000)
+      setSubmitted(true)
+      toast.success(userProfile?.isAdmin ? 'Prompt added successfully!' : 'Prompt submitted for review!')
+
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        setFormData({
+          title: "",
+          description: "",
+          category: "",
+          fullPrompt: "",
+          tags: "",
+        })
+        setSubmitted(false)
+      }, 2000)
+
+    } catch (error: any) {
+      console.error('Error adding prompt:', error)
+      toast.error('Failed to add prompt. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  if (!user) {
+    return (
+      <div className="brutalist-border-thick bg-card p-8 brutalist-shadow text-center">
+        <h3 className="text-2xl font-bold mb-2">SIGN IN REQUIRED</h3>
+        <p className="text-muted-foreground">Please sign in to add prompts to the collection.</p>
+      </div>
+    )
   }
 
   if (submitted) {

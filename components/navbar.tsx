@@ -3,8 +3,16 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Zap } from "lucide-react"
+import { Menu, X, Zap, User, LogOut } from "lucide-react"
 import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
+import { LoginDialog } from "@/components/auth/login-dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navigation = [
   { name: "HOME", href: "/" },
@@ -15,6 +23,8 @@ const navigation = [
 export function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const { user, userProfile, logout } = useAuth()
 
   return (
     <nav className="brutalist-border-thick bg-background brutalist-shadow sticky top-0 z-50">
@@ -48,12 +58,53 @@ export function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Button
-              asChild
-              className="brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold ml-2 md:ml-4 text-sm md:text-base px-3 md:px-4 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-            >
-              <Link href="/admin">ADD PROMPT</Link>
-            </Button>
+            
+            {user ? (
+              <>
+                <Button
+                  asChild
+                  className="brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold ml-2 md:ml-4 text-sm md:text-base px-3 md:px-4 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                >
+                  <Link href="/add-prompt">ADD PROMPT</Link>
+                </Button>
+                
+                {userProfile?.isAdmin && (
+                  <Button
+                    asChild
+                    className="brutalist-border brutalist-shadow-sm bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold ml-2 text-sm md:text-base px-3 md:px-4 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                  >
+                    <Link href="/admin">ADMIN</Link>
+                  </Button>
+                )}
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="brutalist-border brutalist-shadow-sm ml-2 p-2"
+                    >
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <div className="px-2 py-1.5 text-sm font-medium">
+                      {userProfile?.displayName || user.email}
+                    </div>
+                    <DropdownMenuItem onClick={() => logout()}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Button
+                onClick={() => setLoginDialogOpen(true)}
+                className="brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold ml-2 md:ml-4 text-sm md:text-base px-3 md:px-4 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+              >
+                SIGN IN
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -91,17 +142,54 @@ export function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              <Button
-                asChild
-                className="w-full brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold mt-3 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Link href="/admin">ADD PROMPT</Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    asChild
+                    className="w-full brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold mt-3 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Link href="/add-prompt">ADD PROMPT</Link>
+                  </Button>
+                  
+                  {userProfile?.isAdmin && (
+                    <Button
+                      asChild
+                      className="w-full brutalist-border brutalist-shadow-sm bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold mt-2 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Link href="/admin">ADMIN</Link>
+                    </Button>
+                  )}
+                  
+                  <Button
+                    onClick={() => {
+                      logout()
+                      setMobileMenuOpen(false)
+                    }}
+                    variant="outline"
+                    className="w-full brutalist-border brutalist-shadow-sm font-bold mt-2 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                  >
+                    SIGN OUT
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setLoginDialogOpen(true)
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold mt-3 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+                >
+                  SIGN IN
+                </Button>
+              )}
             </div>
           </div>
         )}
       </div>
+      
+      <LoginDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </nav>
   )
 }

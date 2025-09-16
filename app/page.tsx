@@ -1,16 +1,43 @@
 "use client"
 
-import { useState } from "react"
-import { mockPrompts, categories } from "@/lib/prompts-data"
+import { useState, useEffect } from "react"
+import { categories } from "@/lib/prompts-data"
 import { PromptCard } from "@/components/prompt-card"
 import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
+import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
+import { migrateMockDataToFirestore } from "@/lib/migrate-data"
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const filteredPrompts =
-    selectedCategory === "All" ? mockPrompts : mockPrompts.filter((prompt) => prompt.category === selectedCategory)
+  useEffect(() => {
+    const loadPrompts = async () => {
+      try {
+        // Load approved prompts directly (skip migration for now)
+        const approvedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
+        console.log('Loaded prompts:', approvedPrompts.length, 'Category:', selectedCategory)
+        setPrompts(approvedPrompts)
+        
+        // Only migrate if no prompts exist
+        if (approvedPrompts.length === 0) {
+          console.log('No prompts found, running migration...')
+          await migrateMockDataToFirestore()
+          // Reload after migration
+          const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
+          setPrompts(migratedPrompts)
+        }
+      } catch (error) {
+        console.error('Error loading prompts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadPrompts()
+  }, [selectedCategory])
 
   return (
     <main className="min-h-screen bg-background">
@@ -30,21 +57,34 @@ export default function HomePage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {filteredPrompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} />
-          ))}
-        </div>
-
-        {filteredPrompts.length === 0 && (
+        {loading ? (
           <div className="text-center py-8 md:py-12">
             <div className="brutalist-border bg-card p-6 md:p-8 brutalist-shadow">
-              <h3 className="text-xl md:text-2xl font-bold mb-2">NO PROMPTS FOUND</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-2">LOADING PROMPTS...</h3>
               <p className="text-muted-foreground text-sm md:text-base">
-                Try selecting a different category or check back later for new prompts.
+                Please wait while we fetch the latest prompts.
               </p>
             </div>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {prompts.map((prompt) => (
+                <PromptCard key={prompt.id} prompt={prompt} />
+              ))}
+            </div>
+
+            {prompts.length === 0 && (
+              <div className="text-center py-8 md:py-12">
+                <div className="brutalist-border bg-card p-6 md:p-8 brutalist-shadow">
+                  <h3 className="text-xl md:text-2xl font-bold mb-2">NO PROMPTS FOUND</h3>
+                  <p className="text-muted-foreground text-sm md:text-base">
+                    Try selecting a different category or check back later for new prompts.
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </section>
     </main>

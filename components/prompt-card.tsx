@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Copy, Check } from "lucide-react"
 import Link from "next/link"
 import type { Prompt } from "@/lib/prompts-data"
+import type { FirestorePrompt } from "@/lib/firestore-service"
 
 interface PromptCardProps {
-  prompt: Prompt
+  prompt: Prompt | FirestorePrompt
 }
 
 export function PromptCard({ prompt }: PromptCardProps) {
@@ -70,7 +71,11 @@ export function PromptCard({ prompt }: PromptCardProps) {
         </div>
 
         <div className="text-xs md:text-sm text-muted-foreground">
-          Added {new Date(prompt.createdAt).toLocaleDateString()}
+          Added {
+            'createdAt' in prompt && prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+              ? prompt.createdAt.toDate().toLocaleDateString()
+              : new Date(prompt.createdAt as string).toLocaleDateString()
+          }
         </div>
       </article>
     </Link>

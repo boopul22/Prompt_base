@@ -1,8 +1,9 @@
 import { PromptCard } from "@/components/prompt-card"
 import type { Prompt } from "@/lib/prompts-data"
+import type { FirestorePrompt } from "@/lib/firestore-service"
 
 interface RelatedPromptsProps {
-  prompts: Prompt[]
+  prompts: (Prompt | FirestorePrompt)[]
 }
 
 export function RelatedPrompts({ prompts }: RelatedPromptsProps) {

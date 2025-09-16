@@ -1,19 +1,93 @@
 "use client"
 
-import { useState } from "react"
-import { mockPrompts } from "@/lib/prompts-data"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Edit, Eye } from "lucide-react"
+import { Trash2, Edit, Eye, Check, X } from "lucide-react"
 import Link from "next/link"
+import { useAuth } from "@/contexts/auth-context"
+import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
+import { adminService } from "@/lib/admin-service"
+import { toast } from "react-hot-toast"
 
 export function AdminPromptList() {
-  const [prompts, setPrompts] = useState(mockPrompts)
+  const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
+  const [loading, setLoading] = useState(true)
+  const { user, userProfile } = useAuth()
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this prompt?")) {
-      setPrompts((prev) => prev.filter((prompt) => prompt.id !== id))
+  useEffect(() => {
+    if (user && userProfile?.isAdmin) {
+      loadPrompts()
     }
+  }, [user, userProfile])
+
+  const loadPrompts = async () => {
+    try {
+      const allPrompts = await promptsService.getAllPrompts()
+      setPrompts(allPrompts)
+    } catch (error) {
+      console.error('Error loading prompts:', error)
+      toast.error('Failed to load prompts')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this prompt?")) {
+      try {
+        await promptsService.deletePrompt(id)
+        setPrompts((prev) => prev.filter((prompt) => prompt.id !== id))
+        toast.success('Prompt deleted successfully')
+      } catch (error) {
+        console.error('Error deleting prompt:', error)
+        toast.error('Failed to delete prompt')
+      }
+    }
+  }
+
+  const handleApprove = async (promptId: string) => {
+    if (!user) return
+    
+    try {
+      await adminService.approvePrompt(promptId, user.uid)
+      await loadPrompts() // Reload prompts
+      toast.success('Prompt approved successfully')
+    } catch (error) {
+      console.error('Error approving prompt:', error)
+      toast.error('Failed to approve prompt')
+    }
+  }
+
+  const handleReject = async (promptId: string) => {
+    if (!user) return
+    
+    try {
+      await adminService.rejectPrompt(promptId, user.uid)
+      await loadPrompts() // Reload prompts
+      toast.success('Prompt rejected')
+    } catch (error) {
+      console.error('Error rejecting prompt:', error)
+      toast.error('Failed to reject prompt')
+    }
+  }
+
+  if (!userProfile?.isAdmin) {
+    return (
+      <div className="brutalist-border bg-muted p-8 text-center brutalist-shadow-sm">
+        <h3 className="text-xl font-bold mb-2">ACCESS DENIED</h3>
+        <p className="text-muted-foreground">You need admin privileges to view this section.</p>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="brutalist-border bg-muted p-8 text-center brutalist-shadow-sm">
+        <h3 className="text-xl font-bold mb-2">LOADING...</h3>
+        <p className="text-muted-foreground">Fetching prompts...</p>
+      </div>
+    )
   }
 
   return (
@@ -29,7 +103,22 @@ export function AdminPromptList() {
                 >
                   {prompt.category.toUpperCase()}
                 </Badge>
-                <span className="text-xs text-muted-foreground">{new Date(prompt.createdAt).toLocaleDateString()}</span>
+                <Badge
+                  variant={
+                    prompt.status === 'approved' ? 'default' : 
+                    prompt.status === 'pending' ? 'secondary' : 
+                    'destructive'
+                  }
+                  className="brutalist-border font-bold text-xs"
+                >
+                  {prompt.status.toUpperCase()}
+                </Badge>
+                <span className="text-xs text-muted-foreground">
+                  {prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+                    ? prompt.createdAt.toDate().toLocaleDateString()
+                    : new Date().toLocaleDateString()
+                  }
+                </span>
               </div>
               <h3 className="font-bold text-lg mb-1">{prompt.title}</h3>
               <p className="text-sm text-muted-foreground text-pretty">{prompt.description}</p>
@@ -46,24 +135,38 @@ export function AdminPromptList() {
             </div>
 
             <div className="flex gap-2">
+              {prompt.status === 'pending' && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    className="brutalist-border bg-green-600 text-white hover:bg-green-700 p-2"
+                    onClick={() => handleApprove(prompt.id!)}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="brutalist-border bg-red-600 text-white hover:bg-red-700 p-2"
+                    onClick={() => handleReject(prompt.id!)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+              
               <Button asChild size="sm" variant="outline" className="brutalist-border bg-background hover:bg-muted p-2">
                 <Link href={`/prompts/${prompt.slug}`}>
                   <Eye className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="brutalist-border bg-background hover:bg-muted p-2"
-                onClick={() => alert("Edit functionality coming soon!")}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
+              
               <Button
                 size="sm"
                 variant="destructive"
                 className="brutalist-border bg-destructive text-destructive-foreground hover:bg-destructive/90 p-2"
-                onClick={() => handleDelete(prompt.id)}
+                onClick={() => handleDelete(prompt.id!)}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

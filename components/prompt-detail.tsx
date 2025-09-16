@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { Copy, Check, ArrowLeft, Share2 } from "lucide-react"
 import Link from "next/link"
 import type { Prompt } from "@/lib/prompts-data"
+import type { FirestorePrompt } from "@/lib/firestore-service"
 
 interface PromptDetailProps {
-  prompt: Prompt
+  prompt: Prompt | FirestorePrompt
 }
 
 export function PromptDetail({ prompt }: PromptDetailProps) {
@@ -71,7 +72,13 @@ export function PromptDetail({ prompt }: PromptDetailProps) {
           >
             {prompt.category.toUpperCase()}
           </Badge>
-          <span className="text-sm text-muted-foreground">Added {new Date(prompt.createdAt).toLocaleDateString()}</span>
+          <span className="text-sm text-muted-foreground">
+            Added {
+              'createdAt' in prompt && prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+                ? prompt.createdAt.toDate().toLocaleDateString()
+                : new Date(prompt.createdAt as string).toLocaleDateString()
+            }
+          </span>
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">{prompt.title}</h1>
