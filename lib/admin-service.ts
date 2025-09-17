@@ -6,10 +6,11 @@ import {
   query, 
   where, 
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
-import { usersService } from '@/lib/firestore-service'
+import { usersService, promptsService, generateSlug } from '@/lib/firestore-service'
 
 export interface AdminStats {
   totalUsers: number
@@ -149,5 +150,38 @@ export const adminService = {
       console.error('Error checking admin status:', error)
       return false
     }
+  },
+
+  // Bulk create prompts
+  async bulkCreatePrompts(prompts: any[], adminId: string) {
+    const batch = writeBatch(db)
+
+    for (const prompt of prompts) {
+      if (!prompt.title || !prompt.fullPrompt) {
+        console.warn("Skipping prompt with missing title or fullPrompt:", prompt)
+        continue
+      }
+
+      const slug = generateSlug(prompt.title)
+      const newPromptRef = doc(collection(db, "prompts"))
+
+      const newPrompt = {
+        title: prompt.title,
+        description: prompt.description || "",
+        category: prompt.category || "Uncategorized",
+        fullPrompt: prompt.fullPrompt,
+        slug,
+        tags: prompt.tags ? prompt.tags.split(",").map((tag: string) => tag.trim()) : [],
+        images: [],
+        status: 'approved',
+        createdBy: adminId,
+        approvedBy: adminId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }
+      batch.set(newPromptRef, newPrompt)
+    }
+
+    await batch.commit()
   }
 }

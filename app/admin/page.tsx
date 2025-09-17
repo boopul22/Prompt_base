@@ -11,10 +11,20 @@ import { AdminStats } from "@/components/admin-stats"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Upload } from "lucide-react"
+import { AdminBulkUpload } from "@/components/admin-bulk-upload"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("dashboard")
+  const [reloadPrompts, setReloadPrompts] = useState(false)
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false)
 
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
@@ -23,6 +33,11 @@ export default function AdminPage() {
     { id: "categories", label: "Categories", icon: "📂" },
     { id: "users", label: "Users", icon: "👥" }
   ]
+
+  const handleUploadComplete = () => {
+    setIsBulkUploadOpen(false)
+    setReloadPrompts(prev => !prev) // Toggle to trigger reload
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -82,12 +97,28 @@ export default function AdminPage() {
           <div className="space-y-8">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
               <section>
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">ADD NEW PROMPT</h2>
+                <div className="flex justify-between items-center mb-4 md:mb-6">
+                  <h2 className="text-xl md:text-2xl lg:text-3xl font-bold">ADD NEW PROMPT</h2>
+                  <Dialog open={isBulkUploadOpen} onOpenChange={setIsBulkUploadOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="brutalist-border">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Bulk Upload
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Bulk Upload Prompts</DialogTitle>
+                      </DialogHeader>
+                      <AdminBulkUpload onUploadComplete={handleUploadComplete} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 <AddPromptForm />
               </section>
               <section>
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE PROMPTS</h2>
-                <AdminPromptList />
+                <AdminPromptList key={reloadPrompts ? 'reload' : 'initial'} />
               </section>
             </div>
           </div>
