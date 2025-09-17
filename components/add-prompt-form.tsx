@@ -80,7 +80,7 @@ export function AddPromptForm() {
       await promptsService.createPrompt(promptData as any)
 
       setSubmitted(true)
-      toast.success(userProfile?.isAdmin ? 'Prompt added successfully!' : 'Prompt submitted for review!')
+      toast.success(userProfile?.isAdmin ? 'Prompt contributed successfully!' : 'Prompt submitted for review!')
 
       // Reset form after 2 seconds
       setTimeout(() => {
@@ -135,8 +135,8 @@ export function AddPromptForm() {
     return (
       <div className="brutalist-border-thick bg-card p-8 brutalist-shadow text-center">
         <Check className="h-12 w-12 text-green-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold mb-2">PROMPT ADDED!</h3>
-        <p className="text-muted-foreground">Your viral prompt has been successfully added to the collection.</p>
+        <h3 className="text-2xl font-bold mb-2">PROMPT CONTRIBUTED!</h3>
+        <p className="text-muted-foreground">Your viral prompt has been successfully contributed to the collection.</p>
       </div>
     )
   }
@@ -308,11 +308,11 @@ export function AddPromptForm() {
         className="w-full brutalist-border-thick brutalist-shadow bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-3 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
-          "ADDING PROMPT..."
+          "CONTRIBUTING..."
         ) : (
           <>
             <Plus className="h-4 w-4 mr-2" />
-            ADD PROMPT
+            CONTRIBUTE PROMPT
           </>
         )}
       </Button>

@@ -37,7 +37,7 @@ export default function AddPromptPage() {
 
           <div className="brutalist-border-thick bg-primary text-primary-foreground p-4 md:p-8 brutalist-shadow transform -rotate-1 mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">
-              ADD YOUR PROMPT
+              CONTRIBUTE YOUR PROMPT
             </h1>
             <p className="text-base md:text-xl">
               Share your amazing AI prompts with the community

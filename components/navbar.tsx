@@ -67,7 +67,7 @@ export function Navbar() {
                   asChild
                   className="brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold ml-2 md:ml-4 text-sm md:text-base px-3 md:px-4 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
                 >
-                  <Link href="/add-prompt">ADD PROMPT</Link>
+                  <Link href="/add-prompt">CONTRIBUTE</Link>
                 </Button>
                 
                 {userProfile?.isAdmin && (
@@ -178,7 +178,7 @@ export function Navbar() {
                     className="w-full brutalist-border brutalist-shadow-sm bg-accent text-accent-foreground hover:bg-accent/90 font-bold mt-3 text-sm transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Link href="/add-prompt">ADD PROMPT</Link>
+                    <Link href="/add-prompt">CONTRIBUTE</Link>
                   </Button>
                   
                   {userProfile?.isAdmin && (

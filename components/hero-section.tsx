@@ -27,7 +27,7 @@ export function HeroSection() {
             asChild
             className="w-full sm:w-auto brutalist-border-thick brutalist-shadow bg-background text-foreground hover:bg-muted text-base md:text-lg px-6 md:px-8 py-3 md:py-4 font-bold transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
           >
-            <Link href="/admin">ADD PROMPT</Link>
+            <Link href="/add-prompt">CONTRIBUTE PROMPT</Link>
           </Button>
         </div>
       </div>

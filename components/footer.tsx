@@ -1,7 +1,26 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Zap, Github, Twitter, Mail } from "lucide-react"
+import { getCategories } from "@/lib/migrate-categories"
+import { Category } from "@/lib/category-service"
 
 export function Footer() {
+  const [categories, setCategories] = useState<Category[]>([])
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const dbCategories = await getCategories()
+        setCategories(dbCategories.slice(0, 4)) // Show only first 4 categories
+      } catch (error) {
+        console.error('Error loading categories for footer:', error)
+      }
+    }
+
+    loadCategories()
+  }, [])
   return (
     <footer className="brutalist-border-thick bg-card text-card-foreground mt-16">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -55,8 +74,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="text-muted-foreground hover:text-foreground font-medium">
-                  Add Prompt
+                <Link href="/add-prompt" className="text-muted-foreground hover:text-foreground font-medium">
+                  Contribute Prompt
                 </Link>
               </li>
             </ul>
@@ -66,18 +85,22 @@ export function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">CATEGORIES</h3>
             <ul className="space-y-2">
-              <li>
-                <span className="text-muted-foreground font-medium">Content Creation</span>
-              </li>
-              <li>
-                <span className="text-muted-foreground font-medium">Programming</span>
-              </li>
-              <li>
-                <span className="text-muted-foreground font-medium">Business</span>
-              </li>
-              <li>
-                <span className="text-muted-foreground font-medium">Writing</span>
-              </li>
+              {categories.length > 0 ? (
+                categories.map((category) => (
+                  <li key={category.id}>
+                    <Link
+                      href={`/?category=${encodeURIComponent(category.name)}`}
+                      className="text-muted-foreground hover:text-foreground font-medium"
+                    >
+                      {category.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <li>
+                  <span className="text-muted-foreground font-medium">Loading...</span>
+                </li>
+              )}
             </ul>
           </div>
         </div>
