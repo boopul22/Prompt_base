@@ -22,6 +22,7 @@ export interface BlogPost {
   excerpt: string
   slug: string
   featuredImage?: string
+  images?: string[] // Content images
   category: string
   tags: string[]
   status: 'draft' | 'published' | 'archived'

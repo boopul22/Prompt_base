@@ -191,6 +191,33 @@ export function PromptDetail({ prompt, creator }: PromptDetailProps) {
         </div>
       </section>
 
+      {/* Example Images */}
+      {(prompt as any).images && (prompt as any).images.length > 0 && (
+        <section className="mb-8">
+          <div className="brutalist-border bg-card p-6 brutalist-shadow">
+            <h2 className="text-2xl font-bold mb-4">EXAMPLE RESULTS</h2>
+            <p className="text-muted-foreground mb-6">
+              Here are some example outputs created using this prompt:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(prompt as any).images.map((imageUrl: string, index: number) => (
+                <div key={index} className="brutalist-border bg-background p-2 brutalist-shadow-sm">
+                  <img
+                    src={imageUrl}
+                    alt={`Example result ${index + 1} for ${prompt.title}`}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Usage Tips */}
       <section className="mb-8">
         <div className="brutalist-border bg-muted p-6 brutalist-shadow-sm">

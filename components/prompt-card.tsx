@@ -62,6 +62,27 @@ export function PromptCard({ prompt }: PromptCardProps) {
           {prompt.description}
         </p>
 
+        {/* Preview Image */}
+        {(prompt as any).images && (prompt as any).images.length > 0 && (
+          <div className="mb-3 md:mb-4">
+            <div className="brutalist-border bg-background p-1 inline-block">
+              <img
+                src={(prompt as any).images[0]}
+                alt={`Preview for ${prompt.title}`}
+                className="w-20 h-16 md:w-24 md:h-20 object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            </div>
+            {(prompt as any).images.length > 1 && (
+              <span className="text-xs text-muted-foreground ml-2">
+                +{(prompt as any).images.length - 1} more
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-4">
           {prompt.tags.map((tag) => (
             <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-1 brutalist-border font-medium">

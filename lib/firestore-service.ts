@@ -23,6 +23,7 @@ export interface FirestorePrompt {
   fullPrompt: string
   slug: string
   tags: string[]
+  images?: string[] // Example images
   status: 'pending' | 'approved' | 'rejected'
   createdAt: Timestamp
   updatedAt?: Timestamp

@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Check } from "lucide-react"
+import { Plus, Check, Image as ImageIcon, X } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
+import { MediaPicker, type UploadedFile } from "@/components/ui/media-picker"
+import { UPLOAD_FOLDERS } from "@/lib/r2-service"
 import { promptsService, generateSlug } from "@/lib/firestore-service"
 import { getCategories } from "@/lib/migrate-categories"
 import { Category } from "@/lib/category-service"
@@ -22,6 +24,7 @@ export function AddPromptForm() {
     category: "",
     fullPrompt: "",
     tags: "",
+    images: [] as string[],
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -68,6 +71,7 @@ export function AddPromptForm() {
         fullPrompt: formData.fullPrompt,
         slug,
         tags,
+        images: formData.images,
         status,
         createdBy: user.uid,
         ...(userProfile?.isAdmin && { approvedBy: user.uid })
@@ -86,6 +90,7 @@ export function AddPromptForm() {
           category: "",
           fullPrompt: "",
           tags: "",
+          images: [],
         })
         setSubmitted(false)
       }, 2000)
@@ -100,6 +105,21 @@ export function AddPromptForm() {
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleImageUpload = (files: UploadedFile[]) => {
+    const newImageUrls = files.map(file => file.url)
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, ...newImageUrls]
+    }))
+  }
+
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }))
   }
 
   if (!user) {
@@ -187,6 +207,65 @@ export function AddPromptForm() {
           className="brutalist-border bg-background"
         />
         <p className="text-xs text-muted-foreground">Separate tags with commas</p>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-bold">
+          EXAMPLE IMAGES
+        </Label>
+        <p className="text-xs text-muted-foreground mb-3">
+          Upload example images that showcase the results of your prompt
+        </p>
+        <div className="space-y-3">
+          <MediaPicker
+            folder={UPLOAD_FOLDERS.PROMPT_EXAMPLES}
+            onSelect={handleImageUpload}
+            maxFiles={5}
+            allowMultiple={true}
+            title="Add Example Images"
+            trigger={
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full brutalist-border bg-background"
+              >
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Add Example Images
+              </Button>
+            }
+          />
+
+          {formData.images.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Uploaded Images ({formData.images.length})</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {formData.images.map((imageUrl, index) => (
+                  <div key={index} className="relative group">
+                    <div className="aspect-square rounded-lg overflow-hidden bg-muted border">
+                      <img
+                        src={imageUrl}
+                        alt={`Example ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        className="h-8 w-8 p-0"
+                        onClick={() => removeImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">

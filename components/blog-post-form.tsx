@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { X, Plus, Save, Eye, Archive } from "lucide-react"
+import { X, Plus, Save, Eye, Archive, Image as ImageIcon } from "lucide-react"
 import { BlogPost, blogService, blogCategoriesService, BlogCategory, generateBlogSlug, calculateReadTime, generateExcerpt } from "@/lib/blog-service"
 import { useAuth } from "@/contexts/auth-context"
 import { toast } from "react-hot-toast"
+import { MediaPicker, type UploadedFile } from "@/components/ui/media-picker"
+import { UPLOAD_FOLDERS } from "@/lib/r2-service"
 
 interface BlogPostFormProps {
   post?: BlogPost
@@ -32,7 +34,8 @@ export function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
       metaTitle: '',
       metaDescription: '',
       keywords: [] as string[]
-    }
+    },
+    images: [] as string[]
   })
 
   const [categories, setCategories] = useState<BlogCategory[]>([])
@@ -59,7 +62,8 @@ export function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
           metaTitle: post.seo?.metaTitle || '',
           metaDescription: post.seo?.metaDescription || '',
           keywords: post.seo?.keywords || []
-        }
+        },
+        images: (post as any).images || []
       })
       setAutoGenerateSlug(false)
       setAutoGenerateExcerpt(false)
@@ -108,6 +112,24 @@ export function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
         ...prev.seo,
         [field]: value
       }
+    }))
+  }
+
+  const handleFeaturedImageUpload = (files: UploadedFile[]) => {
+    if (files.length > 0) {
+      handleInputChange('featuredImage', files[0].url)
+    }
+  }
+
+  const handleFeaturedImageUrl = (url: string) => {
+    handleInputChange('featuredImage', url)
+  }
+
+  const handleContentImageUpload = (files: UploadedFile[]) => {
+    const newImageUrls = files.map(file => file.url)
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, ...newImageUrls]
     }))
   }
 
@@ -270,14 +292,46 @@ export function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
           </div>
 
           <div>
-            <Label htmlFor="featuredImage">Featured Image URL</Label>
-            <Input
-              id="featuredImage"
-              value={formData.featuredImage}
-              onChange={(e) => handleInputChange('featuredImage', e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="brutalist-border"
-            />
+            <Label>Featured Image</Label>
+            <div className="space-y-3">
+              <MediaPicker
+                folder={UPLOAD_FOLDERS.BLOG_FEATURED}
+                onSelect={handleFeaturedImageUpload}
+                onSelectUrl={handleFeaturedImageUrl}
+                maxFiles={1}
+                allowMultiple={false}
+                title="Select Featured Image"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="brutalist-border w-full"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    {formData.featuredImage ? 'Change Featured Image' : 'Select Featured Image'}
+                  </Button>
+                }
+              />
+
+              {formData.featuredImage && (
+                <div className="relative">
+                  <img
+                    src={formData.featuredImage}
+                    alt="Featured image preview"
+                    className="w-full h-40 object-cover rounded-lg border"
+                  />
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2"
+                    onClick={() => handleInputChange('featuredImage', '')}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
@@ -332,6 +386,81 @@ export function BlogPostForm({ post, onSave, onCancel }: BlogPostFormProps) {
                   </button>
                 </Badge>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Content Images</Label>
+            <p className="text-xs text-muted-foreground mb-3">
+              Upload images to use in your blog post content. You can copy the URLs and paste them into your content.
+            </p>
+            <div className="space-y-3">
+              <MediaPicker
+                folder={UPLOAD_FOLDERS.BLOG_CONTENT}
+                onSelect={handleContentImageUpload}
+                maxFiles={10}
+                allowMultiple={true}
+                title="Add Content Images"
+                trigger={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="brutalist-border w-full"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    Add Content Images
+                  </Button>
+                }
+              />
+
+              {formData.images.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Uploaded Images ({formData.images.length})</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {formData.images.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <div className="aspect-square rounded-lg overflow-hidden bg-muted border">
+                          <img
+                            src={imageUrl}
+                            alt={`Content image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex flex-col justify-between p-2">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="self-end h-6 w-6 p-0"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                images: prev.images.filter((_, i) => i !== index)
+                              }))
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+
+                          <div className="text-white text-xs">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 text-white hover:bg-white/20 p-1"
+                              onClick={() => {
+                                navigator.clipboard.writeText(imageUrl)
+                                toast.success('Image URL copied to clipboard')
+                              }}
+                            >
+                              Copy URL
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
