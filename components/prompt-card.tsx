@@ -10,8 +10,13 @@ import Link from "next/link"
 import type { Prompt } from "@/lib/prompts-data"
 import type { FirestorePrompt } from "@/lib/firestore-service"
 
+interface SerializedPrompt extends Omit<FirestorePrompt, 'createdAt' | 'updatedAt'> {
+  createdAt: string
+  updatedAt?: string
+}
+
 interface PromptCardProps {
-  prompt: Prompt | FirestorePrompt
+  prompt: Prompt | FirestorePrompt | SerializedPrompt
 }
 
 export function PromptCard({ prompt }: PromptCardProps) {

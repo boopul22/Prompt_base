@@ -7,42 +7,48 @@ import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
 import { StructuredData } from "@/components/structured-data"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
-import { migrateMockDataToFirestore } from "@/lib/migrate-data"
-import { getCategories, migrateCategoriestoFirestore } from "@/lib/migrate-categories"
+
+interface SerializedPrompt extends Omit<FirestorePrompt, 'createdAt' | 'updatedAt'> {
+  createdAt: string
+  updatedAt?: string
+}
+import { getCategories } from "@/lib/migrate-categories"
 import { Category } from "@/lib/category-service"
 
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
+  const [prompts, setPrompts] = useState<SerializedPrompt[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load categories first
-        let dbCategories = await getCategories()
+        setLoading(true)
 
-        // If no categories exist, try to migrate default ones
-        if (dbCategories.length === 0) {
-          console.log('No categories found, migrating default categories...')
-          try {
-            await migrateCategoriestoFirestore()
-            dbCategories = await getCategories()
-            console.log('Default categories migrated successfully')
-          } catch (error) {
-            console.error('Error migrating categories:', error)
-          }
-        }
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Loading timeout')), 10000)
+        )
 
-        // Load prompts
-        const approvedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
+        // Load categories
+        const categoriesPromise = getCategories().catch(error => {
+          console.error('Categories loading failed:', error)
+          return []
+        })
 
-        console.log('Loaded categories:', dbCategories.length)
-        console.log('Loaded prompts:', approvedPrompts.length, 'Category:', selectedCategory)
+        const dbCategories = await Promise.race([categoriesPromise, timeoutPromise]) as Category[]
+
+        // Load prompts with timeout
+        const promptsPromise = promptsService.getApprovedPrompts(selectedCategory).catch(error => {
+          console.error('Prompts loading failed:', error)
+          return []
+        })
+
+        const approvedPrompts = await Promise.race([promptsPromise, timeoutPromise]) as FirestorePrompt[]
 
         setCategories(dbCategories)
-        
+
         // Serialize timestamps before setting state
         const serializedPrompts = approvedPrompts.map(prompt => ({
           ...prompt,
@@ -54,29 +60,11 @@ export default function HomePage() {
             : prompt.updatedAt
         }))
         setPrompts(serializedPrompts)
-        
-        // Migration disabled - prompts should be managed through admin panel
-        // Only migrate prompts if no prompts exist
-        // if (approvedPrompts.length === 0) {
-        //   console.log('No prompts found, running migration...')
-        //   await migrateMockDataToFirestore()
-        //   // Reload prompts after migration
-        //   const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
-        //
-        //   // Serialize timestamps for migrated prompts too
-        //   const serializedMigratedPrompts = migratedPrompts.map(prompt => ({
-        //     ...prompt,
-        //     createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-        //       ? prompt.createdAt.toDate().toISOString()
-        //       : prompt.createdAt,
-        //     updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
-        //       ? prompt.updatedAt.toDate().toISOString()
-        //       : prompt.updatedAt
-        //   }))
-        //   setPrompts(serializedMigratedPrompts)
-        // }
+
       } catch (error) {
         console.error('Error loading data:', error)
+        setCategories([])
+        setPrompts([])
       } finally {
         setLoading(false)
       }
