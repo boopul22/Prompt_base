@@ -83,7 +83,7 @@ export default function HomePage() {
           <nav className="mb-4 text-sm text-muted-foreground">
             <span className="text-foreground">Home</span>
           </nav>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-balance">FREE AI PROMPTS FOR CONTENT CREATION</h2>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-balance">FREE AI PROMPTS FOR CONTENT CREATION</h1>
           <p className="text-base md:text-lg text-muted-foreground mb-4 md:mb-6 text-pretty">
             Browse our free collection of AI prompts for ChatGPT, Claude, Gemini, and all models. Download tested marketing templates, and prompt engineering guides for SEO, social media, and business growth.
           </p>
