@@ -8,7 +8,7 @@ import { HeroSection } from "@/components/hero-section"
 import { StructuredData } from "@/components/structured-data"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
 import { migrateMockDataToFirestore } from "@/lib/migrate-data"
-import { getCategories } from "@/lib/migrate-categories"
+import { getCategories, migrateCategoriestoFirestore } from "@/lib/migrate-categories"
 import { Category } from "@/lib/category-service"
 
 export default function HomePage() {
@@ -20,15 +20,27 @@ export default function HomePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load categories and prompts in parallel
-        const [dbCategories, approvedPrompts] = await Promise.all([
-          getCategories(),
-          promptsService.getApprovedPrompts(selectedCategory)
-        ])
+        // Load categories first
+        let dbCategories = await getCategories()
+
+        // If no categories exist, try to migrate default ones
+        if (dbCategories.length === 0) {
+          console.log('No categories found, migrating default categories...')
+          try {
+            await migrateCategoriestoFirestore()
+            dbCategories = await getCategories()
+            console.log('Default categories migrated successfully')
+          } catch (error) {
+            console.error('Error migrating categories:', error)
+          }
+        }
+
+        // Load prompts
+        const approvedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
 
         console.log('Loaded categories:', dbCategories.length)
         console.log('Loaded prompts:', approvedPrompts.length, 'Category:', selectedCategory)
-        
+
         setCategories(dbCategories)
         
         // Serialize timestamps before setting state

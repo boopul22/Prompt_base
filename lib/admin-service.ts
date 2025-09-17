@@ -9,7 +9,7 @@ import {
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 import { usersService, promptsService, generateSlug } from '@/lib/firestore-service'
 import { categoriesService } from '@/lib/category-service'
 
@@ -27,8 +27,8 @@ export const adminService = {
   async getAdminStats(): Promise<AdminStats> {
     try {
       const [usersSnapshot, promptsSnapshot] = await Promise.all([
-        getDocs(collection(db, 'users')),
-        getDocs(collection(db, 'prompts'))
+        getDocs(collection(getFirestoreInstance(), 'users')),
+        getDocs(collection(getFirestoreInstance(), 'prompts'))
       ])
 
       const totalUsers = usersSnapshot.size
@@ -96,7 +96,7 @@ export const adminService = {
   async getPendingPrompts() {
     try {
       const q = query(
-        collection(db, 'prompts'), 
+        collection(getFirestoreInstance(), 'prompts'), 
         where('status', '==', 'pending'),
         orderBy('createdAt', 'desc')
       )
@@ -155,7 +155,7 @@ export const adminService = {
 
   // Bulk create prompts with smart category matching
   async bulkCreatePrompts(prompts: any[], adminId: string) {
-    const batch = writeBatch(db)
+    const batch = writeBatch(getFirestoreInstance())
     const categoryPromptCounts = new Map<string, number>()
 
     // Get all existing categories to standardize names
@@ -169,7 +169,7 @@ export const adminService = {
       }
 
       const slug = generateSlug(prompt.title)
-      const newPromptRef = doc(collection(db, "prompts"))
+      const newPromptRef = doc(collection(getFirestoreInstance(), "prompts"))
 
       // Standardize category name by finding existing category with comprehensive matching
       let category = prompt.category || "Uncategorized"
@@ -346,7 +346,7 @@ export const adminService = {
 
       for (let i = 0; i < promptIds.length; i += batchSize) {
         const batchIds = promptIds.slice(i, i + batchSize)
-        const batch = writeBatch(db)
+        const batch = writeBatch(getFirestoreInstance())
 
         // Get prompts to track category counts and add to batch
         for (const promptId of batchIds) {
@@ -418,7 +418,7 @@ export const adminService = {
 
       // Process duplicates
       const duplicatesFound = []
-      const batch = writeBatch(db)
+      const batch = writeBatch(getFirestoreInstance())
 
       for (const [slug, categories] of slugMap) {
         if (categories.length > 1) {
@@ -448,7 +448,7 @@ export const adminService = {
           for (const dupCategory of duplicateCategories) {
             // Get all prompts using this duplicate category
             const promptsSnapshot = await getDocs(
-              query(collection(db, 'prompts'), where('category', '==', dupCategory.name))
+              query(collection(getFirestoreInstance(), 'prompts'), where('category', '==', dupCategory.name))
             )
 
             // Update prompts to use the kept category name

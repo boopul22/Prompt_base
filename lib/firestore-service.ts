@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 
 export interface FirestorePrompt {
   id?: string
@@ -54,6 +54,7 @@ export interface UserProfile {
 export const promptsService = {
   // Create a new prompt
   async createPrompt(promptData: Omit<FirestorePrompt, 'id' | 'createdAt' | 'updatedAt' | 'upvotes' | 'downvotes'>) {
+    const db = getFirestoreInstance()
     const docRef = await addDoc(collection(db, 'prompts'), {
       ...promptData,
       createdAt: serverTimestamp(),
@@ -68,17 +69,19 @@ export const promptsService = {
     try {
       let q;
       
+      const db = getFirestoreInstance()
+
       if (category && category !== 'All') {
         // Simple query without ordering to avoid index requirements
         q = query(
-          collection(db, 'prompts'), 
+          collection(getFirestoreInstance(), 'prompts'),
           where('status', '==', 'approved'),
           where('category', '==', category)
         )
       } else {
         // Simple query without ordering to avoid index requirements
         q = query(
-          collection(db, 'prompts'), 
+          collection(getFirestoreInstance(), 'prompts'),
           where('status', '==', 'approved')
         )
       }
@@ -105,6 +108,7 @@ export const promptsService = {
   // Get all prompts (admin only)
   async getAllPrompts() {
     try {
+      const db = getFirestoreInstance()
       const snapshot = await getDocs(collection(db, 'prompts'))
       const prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
       
@@ -127,7 +131,7 @@ export const promptsService = {
   // Get prompts by user
   async getPromptsByUser(userId: string) {
     const q = query(
-      collection(db, 'prompts'), 
+      collection(getFirestoreInstance(), 'prompts'), 
       where('createdBy', '==', userId),
       orderBy('createdAt', 'desc')
     )
@@ -137,7 +141,7 @@ export const promptsService = {
 
   // Get prompt by slug
   async getPromptBySlug(slug: string) {
-    const q = query(collection(db, 'prompts'), where('slug', '==', slug))
+    const q = query(collection(getFirestoreInstance(), 'prompts'), where('slug', '==', slug))
     const snapshot = await getDocs(q)
     if (snapshot.empty) return null
     const doc = snapshot.docs[0]
@@ -147,7 +151,7 @@ export const promptsService = {
   // Get prompt by ID
   async getPromptById(promptId: string) {
     try {
-      const docRef = doc(db, 'prompts', promptId)
+      const docRef = doc(getFirestoreInstance(), 'prompts', promptId)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
         return { id: docSnap.id, ...docSnap.data() } as FirestorePrompt
@@ -161,7 +165,7 @@ export const promptsService = {
 
   // Update prompt
   async updatePrompt(promptId: string, updates: Partial<FirestorePrompt>) {
-    const docRef = doc(db, 'prompts', promptId)
+    const docRef = doc(getFirestoreInstance(), 'prompts', promptId)
     await updateDoc(docRef, {
       ...updates,
       updatedAt: serverTimestamp()
@@ -170,7 +174,7 @@ export const promptsService = {
 
   // Delete prompt
   async deletePrompt(promptId: string) {
-    await deleteDoc(doc(db, 'prompts', promptId))
+    await deleteDoc(doc(getFirestoreInstance(), 'prompts', promptId))
   },
 
   // Approve prompt (admin only)
@@ -194,7 +198,7 @@ export const promptsService = {
 export const usersService = {
   // Get user profile
   async getUserProfile(userId: string) {
-    const docRef = doc(db, 'users', userId)
+    const docRef = doc(getFirestoreInstance(), 'users',userId)
     const snapshot = await getDoc(docRef)
     if (!snapshot.exists()) return null
     return { id: snapshot.id, ...snapshot.data() } as UserProfile
@@ -203,7 +207,7 @@ export const usersService = {
   // Get user by ID
   async getUserById(uid: string): Promise<UserProfile | null> {
     try {
-      const userDoc = await getDoc(doc(db, 'users', uid))
+      const userDoc = await getDoc(doc(getFirestoreInstance(), 'users',uid))
       if (userDoc.exists()) {
         return { ...userDoc.data(), uid: userDoc.id } as UserProfile
       }
@@ -216,13 +220,13 @@ export const usersService = {
 
   // Get all users (admin only)
   async getAllUsers() {
-    const snapshot = await getDocs(collection(db, 'users'))
+    const snapshot = await getDocs(collection(getFirestoreInstance(), 'users'))
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserProfile))
   },
 
   // Update user profile
   async updateUserProfile(userId: string, updates: Partial<UserProfile>) {
-    const docRef = doc(db, 'users', userId)
+    const docRef = doc(getFirestoreInstance(), 'users',userId)
     await updateDoc(docRef, {
       ...updates,
       updatedAt: serverTimestamp()

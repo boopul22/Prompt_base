@@ -1,5 +1,5 @@
 import { collection, addDoc, serverTimestamp, getDocs, query, where } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 import { mockPrompts } from '@/lib/prompts-data'
 
 // This function migrates mock data to Firestore
@@ -7,7 +7,7 @@ import { mockPrompts } from '@/lib/prompts-data'
 export async function migrateMockDataToFirestore() {
   try {
     // Check if data already exists
-    const existingPrompts = await getDocs(collection(db, 'prompts'))
+    const existingPrompts = await getDocs(collection(getFirestoreInstance(), 'prompts'))
     if (!existingPrompts.empty) {
       console.log('Prompts already exist in Firestore, skipping migration')
       return
@@ -19,7 +19,7 @@ export async function migrateMockDataToFirestore() {
     const systemUserId = 'system-user'
 
     for (const prompt of mockPrompts) {
-      await addDoc(collection(db, 'prompts'), {
+      await addDoc(collection(getFirestoreInstance(), 'prompts'), {
         title: prompt.title,
         description: prompt.description,
         category: prompt.category,

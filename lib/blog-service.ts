@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 
 export interface BlogPost {
   id?: string
@@ -54,7 +54,7 @@ export interface BlogCategory {
 export const blogService = {
   // Create a new blog post
   async createPost(postData: Omit<BlogPost, 'id' | 'createdAt' | 'updatedAt' | 'views'>) {
-    const docRef = await addDoc(collection(db, 'blog-posts'), {
+    const docRef = await addDoc(collection(getFirestoreInstance(), 'blog-posts'), {
       ...postData,
       createdAt: serverTimestamp(),
       views: 0
@@ -69,13 +69,13 @@ export const blogService = {
 
       if (categorySlug && categorySlug !== 'all') {
         q = query(
-          collection(db, 'blog-posts'),
+          collection(getFirestoreInstance(), 'blog-posts'),
           where('status', '==', 'published'),
           where('category', '==', categorySlug)
         )
       } else {
         q = query(
-          collection(db, 'blog-posts'),
+          collection(getFirestoreInstance(), 'blog-posts'),
           where('status', '==', 'published')
         )
       }
@@ -110,7 +110,7 @@ export const blogService = {
   // Get all blog posts (admin only)
   async getAllPosts() {
     try {
-      const snapshot = await getDocs(collection(db, 'blog-posts'))
+      const snapshot = await getDocs(collection(getFirestoreInstance(), 'blog-posts'))
       const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost))
 
       // Sort on client side
@@ -133,7 +133,7 @@ export const blogService = {
   async getPostsByAuthor(authorId: string) {
     try {
       const q = query(
-        collection(db, 'blog-posts'),
+        collection(getFirestoreInstance(), 'blog-posts'),
         where('author', '==', authorId)
       )
       const snapshot = await getDocs(q)
@@ -157,7 +157,7 @@ export const blogService = {
   // Get blog post by slug
   async getPostBySlug(slug: string) {
     try {
-      const q = query(collection(db, 'blog-posts'), where('slug', '==', slug))
+      const q = query(collection(getFirestoreInstance(), 'blog-posts'), where('slug', '==', slug))
       const snapshot = await getDocs(q)
       if (snapshot.empty) return null
       const doc = snapshot.docs[0]
@@ -170,7 +170,7 @@ export const blogService = {
 
   // Update blog post
   async updatePost(postId: string, updates: Partial<BlogPost>) {
-    const docRef = doc(db, 'blog-posts', postId)
+    const docRef = doc(getFirestoreInstance(), 'blog-posts', postId)
     await updateDoc(docRef, {
       ...updates,
       updatedAt: serverTimestamp()
@@ -179,7 +179,7 @@ export const blogService = {
 
   // Delete blog post
   async deletePost(postId: string) {
-    await deleteDoc(doc(db, 'blog-posts', postId))
+    await deleteDoc(doc(getFirestoreInstance(), 'blog-posts', postId))
   },
 
   // Publish post
@@ -200,7 +200,7 @@ export const blogService = {
   // Increment views
   async incrementViews(postId: string) {
     try {
-      const postRef = doc(db, 'blog-posts', postId)
+      const postRef = doc(getFirestoreInstance(), 'blog-posts', postId)
       const postDoc = await getDoc(postRef)
       if (postDoc.exists()) {
         const currentViews = postDoc.data().views || 0
@@ -217,7 +217,7 @@ export const blogService = {
   async getRelatedPosts(currentPostId: string, category: string, limit: number = 3) {
     try {
       const q = query(
-        collection(db, 'blog-posts'),
+        collection(getFirestoreInstance(), 'blog-posts'),
         where('status', '==', 'published'),
         where('category', '==', category)
       )
@@ -239,7 +239,7 @@ export const blogService = {
 export const blogCategoriesService = {
   // Create a new category
   async createCategory(categoryData: Omit<BlogCategory, 'id' | 'createdAt' | 'updatedAt' | 'postCount'>) {
-    const docRef = await addDoc(collection(db, 'blog-categories'), {
+    const docRef = await addDoc(collection(getFirestoreInstance(), 'blog-categories'), {
       ...categoryData,
       createdAt: serverTimestamp(),
       postCount: 0
@@ -250,7 +250,7 @@ export const blogCategoriesService = {
   // Get all categories
   async getAllCategories() {
     try {
-      const snapshot = await getDocs(collection(db, 'blog-categories'))
+      const snapshot = await getDocs(collection(getFirestoreInstance(), 'blog-categories'))
       const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogCategory))
 
       return categories.sort((a, b) => a.name.localeCompare(b.name))
@@ -263,7 +263,7 @@ export const blogCategoriesService = {
   // Get category by slug
   async getCategoryBySlug(slug: string) {
     try {
-      const q = query(collection(db, 'blog-categories'), where('slug', '==', slug))
+      const q = query(collection(getFirestoreInstance(), 'blog-categories'), where('slug', '==', slug))
       const snapshot = await getDocs(q)
       if (snapshot.empty) return null
       const doc = snapshot.docs[0]
@@ -276,7 +276,7 @@ export const blogCategoriesService = {
 
   // Update category
   async updateCategory(categoryId: string, updates: Partial<BlogCategory>) {
-    const docRef = doc(db, 'blog-categories', categoryId)
+    const docRef = doc(getFirestoreInstance(), 'blog-categories', categoryId)
     await updateDoc(docRef, {
       ...updates,
       updatedAt: serverTimestamp()
@@ -285,7 +285,7 @@ export const blogCategoriesService = {
 
   // Delete category
   async deleteCategory(categoryId: string) {
-    await deleteDoc(doc(db, 'blog-categories', categoryId))
+    await deleteDoc(doc(getFirestoreInstance(), 'blog-categories', categoryId))
   },
 
   // Update post count for category

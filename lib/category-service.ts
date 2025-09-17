@@ -57,14 +57,14 @@ export const categoriesService = {
     try {
       const snapshot = await getDocs(collection(db, 'categories'))
       const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category))
-      
+
       // Sort by creation date (newest first)
       return categories.sort((a, b) => {
-        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt 
-          ? a.createdAt.toDate().getTime() 
+        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt
+          ? a.createdAt.toDate().getTime()
           : new Date().getTime()
-        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt 
-          ? b.createdAt.toDate().getTime() 
+        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt
+          ? b.createdAt.toDate().getTime()
           : new Date().getTime()
         return bTime - aTime
       })

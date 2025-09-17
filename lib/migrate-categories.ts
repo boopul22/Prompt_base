@@ -1,5 +1,5 @@
 import { collection, getDocs } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 import { categoriesService, generateCategorySlug } from '@/lib/category-service'
 
 // Default categories with descriptions

@@ -2,11 +2,11 @@
 // You can run this in the browser console after signing up with your first account
 
 import { doc, updateDoc } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { getFirestoreInstance } from '@/lib/firebase'
 
 export async function makeUserAdmin(userId: string) {
   try {
-    const userDoc = doc(db, 'users', userId)
+    const userDoc = doc(getFirestoreInstance(), 'users', userId)
     await updateDoc(userDoc, {
       isAdmin: true,
       updatedAt: new Date()

@@ -1,17 +1,10 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import {
+import type {
   User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  GoogleAuthProvider,
-  signInWithPopup
 } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
+import { getAuthInstance, getFirestoreInstance } from '@/lib/firebase'
 
 interface UserProfile {
   uid: string
@@ -40,70 +33,96 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user)
+    let unsubscribe: (() => void) | null = null
 
-      if (user) {
-        try {
-          // Get user profile from Firestore
-          const userDoc = await getDoc(doc(db, 'users', user.uid))
-          if (userDoc.exists()) {
-            const data = userDoc.data()
-            setUserProfile({
-              uid: user.uid,
-              email: user.email!,
-              displayName: data.displayName || user.displayName,
-              bio: data.bio,
-              avatar: data.avatar || user.photoURL, // Use Google avatar as fallback
-              socialMedia: data.socialMedia,
-              isAdmin: data.isAdmin || false,
-              createdAt: data.createdAt?.toDate() || new Date()
-            })
-          } else {
-            // Create user profile if it doesn't exist
-            const newProfile: UserProfile = {
-              uid: user.uid,
-              email: user.email!,
-              displayName: user.displayName || undefined,
-              avatar: user.photoURL || undefined, // Automatically get Google avatar
-              isAdmin: false,
-              createdAt: new Date()
+    const initAuth = async () => {
+      try {
+        const { onAuthStateChanged } = await import('firebase/auth')
+        const { doc, getDoc, setDoc } = await import('firebase/firestore')
+        const auth = getAuthInstance()
+        const db = getFirestoreInstance()
+
+        unsubscribe = onAuthStateChanged(auth, async (user) => {
+          setUser(user)
+
+          if (user) {
+            try {
+              // Get user profile from Firestore
+              const userDoc = await getDoc(doc(db, 'users', user.uid))
+              if (userDoc.exists()) {
+                const data = userDoc.data()
+                setUserProfile({
+                  uid: user.uid,
+                  email: user.email!,
+                  displayName: data.displayName || user.displayName,
+                  bio: data.bio,
+                  avatar: data.avatar || user.photoURL, // Use Google avatar as fallback
+                  socialMedia: data.socialMedia,
+                  isAdmin: data.isAdmin || false,
+                  createdAt: data.createdAt?.toDate() || new Date()
+                })
+              } else {
+                // Create user profile if it doesn't exist
+                const newProfile: UserProfile = {
+                  uid: user.uid,
+                  email: user.email!,
+                  displayName: user.displayName || undefined,
+                  avatar: user.photoURL || undefined, // Automatically get Google avatar
+                  isAdmin: false,
+                  createdAt: new Date()
+                }
+                console.log('Creating user profile:', newProfile)
+                await setDoc(doc(db, 'users', user.uid), newProfile)
+                console.log('User profile created successfully')
+                setUserProfile(newProfile)
+              }
+            } catch (error) {
+              console.error('Error handling user profile:', error)
+              // Still set a basic profile even if Firestore fails
+              setUserProfile({
+                uid: user.uid,
+                email: user.email!,
+                displayName: user.displayName || undefined,
+                avatar: user.photoURL || undefined, // Include Google avatar in fallback too
+                isAdmin: false,
+                createdAt: new Date()
+              })
             }
-            console.log('Creating user profile:', newProfile)
-            await setDoc(doc(db, 'users', user.uid), newProfile)
-            console.log('User profile created successfully')
-            setUserProfile(newProfile)
+          } else {
+            setUserProfile(null)
           }
-        } catch (error) {
-          console.error('Error handling user profile:', error)
-          // Still set a basic profile even if Firestore fails
-          setUserProfile({
-            uid: user.uid,
-            email: user.email!,
-            displayName: user.displayName || undefined,
-            avatar: user.photoURL || undefined, // Include Google avatar in fallback too
-            isAdmin: false,
-            createdAt: new Date()
-          })
-        }
-      } else {
-        setUserProfile(null)
+
+          setLoading(false)
+        })
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+        setLoading(false)
       }
+    }
 
-      setLoading(false)
-    })
+    initAuth()
 
-
-    return unsubscribe
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
+    }
   }, [])
 
   const signInWithEmail = async (email: string, password: string) => {
+    const { signInWithEmailAndPassword } = await import('firebase/auth')
+    const auth = getAuthInstance()
     await signInWithEmailAndPassword(auth, email, password)
   }
 
   const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+    const { createUserWithEmailAndPassword } = await import('firebase/auth')
+    const { doc, setDoc } = await import('firebase/firestore')
+    const auth = getAuthInstance()
+    const db = getFirestoreInstance()
+
     const result = await createUserWithEmailAndPassword(auth, email, password)
-    
+
     // Create user profile in Firestore
     const userProfile: UserProfile = {
       uid: result.user.uid,
@@ -113,11 +132,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAdmin: false,
       createdAt: new Date()
     }
-    
+
     await setDoc(doc(db, 'users', result.user.uid), userProfile)
   }
 
   const signInWithGoogle = async () => {
+    const { GoogleAuthProvider, signInWithPopup } = await import('firebase/auth')
+    const auth = getAuthInstance()
+
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({
       prompt: 'select_account'
@@ -134,13 +156,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    const { signOut } = await import('firebase/auth')
+    const auth = getAuthInstance()
     await signOut(auth)
   }
 
   const refreshUserProfile = async () => {
     if (!user) return
-    
+
     try {
+      const { doc, getDoc } = await import('firebase/firestore')
+      const db = getFirestoreInstance()
+
       const userDoc = await getDoc(doc(db, 'users', user.uid))
       if (userDoc.exists()) {
         const data = userDoc.data()
