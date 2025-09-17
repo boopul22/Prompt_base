@@ -1,9 +1,9 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { 
-  User, 
-  onAuthStateChanged, 
+import {
+  User,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user)
-      
+
       if (user) {
         try {
           // Get user profile from Firestore
@@ -89,9 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUserProfile(null)
       }
-      
+
       setLoading(false)
     })
+
 
     return unsubscribe
   }, [])
@@ -118,7 +119,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
-    await signInWithPopup(auth, provider)
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    })
+    try {
+      await signInWithPopup(auth, provider)
+    } catch (error: any) {
+      // Handle popup blocked or user cancelled
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+        throw new Error('Popup was blocked. Please allow popups for this site and try again.')
+      }
+      throw error
+    }
   }
 
   const logout = async () => {

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Mail, Lock, User, Chrome } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { toast } from 'react-hot-toast'
 
@@ -58,7 +59,14 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
       toast.success('Signed in with Google!')
       onOpenChange(false)
     } catch (error: any) {
-      toast.error(error.message || 'An error occurred')
+      console.error('Google sign-in error:', error)
+      if (error.message.includes('popup')) {
+        toast.error('Please allow popups and try again')
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in was cancelled')
+      } else {
+        toast.error(error.message || 'Failed to sign in with Google')
+      }
     } finally {
       setLoading(false)
     }
@@ -66,12 +74,14 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md brutalist-border-thick brutalist-shadow bg-card">
         <DialogHeader>
-          <DialogTitle>{isSignUp ? 'Create Account' : 'Sign In'}</DialogTitle>
-          <DialogDescription>
-            {isSignUp 
-              ? 'Create an account to start adding prompts' 
+          <DialogTitle className="text-2xl font-bold">
+            {isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN'}
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            {isSignUp
+              ? 'Create an account to start contributing prompts'
               : 'Sign in to your account to manage prompts'
             }
           </DialogDescription>
@@ -80,72 +90,102 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignUp && (
             <div>
-              <Label htmlFor="displayName">Display Name</Label>
+              <Label htmlFor="displayName" className="text-sm font-bold flex items-center gap-2">
+                <User className="h-4 w-4" />
+                DISPLAY NAME
+              </Label>
               <Input
                 id="displayName"
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your name"
+                className="brutalist-border bg-background"
               />
             </div>
           )}
-          
+
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-sm font-bold flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              EMAIL
+            </Label>
             <Input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
+              className="brutalist-border bg-background"
               required
             />
           </div>
-          
+
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-sm font-bold flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              PASSWORD
+            </Label>
             <Input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              className="brutalist-border bg-background"
               required
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
+          <Button
+            type="submit"
+            className="w-full brutalist-border brutalist-shadow bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-3 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+            disabled={loading}
+          >
+            {loading ? 'LOADING...' : (isSignUp ? 'CREATE ACCOUNT' : 'SIGN IN')}
           </Button>
         </form>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full brutalist-border border-t-4" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">Or</span>
+            <span className="bg-card px-3 text-muted-foreground font-bold">OR</span>
           </div>
         </div>
 
-        <Button variant="outline" onClick={handleGoogleSignIn} disabled={loading}>
-          Continue with Google
+        <Button
+          variant="outline"
+          onClick={handleGoogleSignIn}
+          disabled={loading}
+          className="w-full brutalist-border brutalist-shadow bg-background hover:bg-muted font-bold py-3 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+        >
+          <Chrome className="h-4 w-4 mr-2" />
+          CONTINUE WITH GOOGLE
         </Button>
 
         <div className="text-center text-sm">
           {isSignUp ? (
             <>
-              Already have an account?{' '}
-              <Button variant="link" className="p-0" onClick={() => setIsSignUp(false)}>
-                Sign In
+              <span className="text-muted-foreground">Already have an account?</span>{' '}
+              <Button
+                variant="link"
+                className="p-0 font-bold text-primary hover:text-primary/80"
+                onClick={() => setIsSignUp(false)}
+              >
+                SIGN IN
               </Button>
             </>
           ) : (
             <>
-              Don't have an account?{' '}
-              <Button variant="link" className="p-0" onClick={() => setIsSignUp(true)}>
-                Create Account
+              <span className="text-muted-foreground">Don't have an account?</span>{' '}
+              <Button
+                variant="link"
+                className="p-0 font-bold text-primary hover:text-primary/80"
+                onClick={() => setIsSignUp(true)}
+              >
+                CREATE ACCOUNT
               </Button>
             </>
           )}
