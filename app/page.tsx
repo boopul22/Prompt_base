@@ -107,11 +107,22 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <CategoryFilter
-            categories={['All', ...categories.map(cat => cat.name)]}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-          />
+          {categories.length > 0 && (
+            <CategoryFilter
+              categories={['All', ...categories.map(cat => cat.name)]}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+            />
+          )}
+
+          {categories.length === 0 && !loading && (
+            <div className="brutalist-border bg-muted p-6 text-center brutalist-shadow-sm mb-6">
+              <h3 className="text-lg font-bold mb-2">NO CATEGORIES AVAILABLE</h3>
+              <p className="text-sm text-muted-foreground">
+                Categories are being set up. Check back soon for organized prompt collections.
+              </p>
+            </div>
+          )}
         </div>
 
         {loading ? (

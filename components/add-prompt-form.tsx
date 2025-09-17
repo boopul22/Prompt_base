@@ -176,23 +176,40 @@ export function AddPromptForm() {
         <Label htmlFor="category" className="text-sm font-bold">
           CATEGORY *
         </Label>
-        <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
-          <SelectTrigger className="brutalist-border bg-background">
-            <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Select a category"} />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.name}>
-                {category.name}
-                {category.description && (
-                  <span className="text-xs text-muted-foreground ml-2">
-                    - {category.description.substring(0, 50)}...
-                  </span>
-                )}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {categoriesLoading ? (
+          <Select disabled>
+            <SelectTrigger className="brutalist-border bg-background">
+              <SelectValue placeholder="Loading categories..." />
+            </SelectTrigger>
+          </Select>
+        ) : categories.length === 0 ? (
+          <div className="brutalist-border bg-muted p-4 text-center">
+            <p className="text-sm text-muted-foreground mb-2">
+              No categories available. Please contact an admin to add categories first.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Categories are required to organize prompts.
+            </p>
+          </div>
+        ) : (
+          <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
+            <SelectTrigger className="brutalist-border bg-background">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
+                  {category.description && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      - {category.description.substring(0, 50)}...
+                    </span>
+                  )}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -286,7 +303,7 @@ export function AddPromptForm() {
       <Button
         type="submit"
         disabled={
-          isSubmitting || !formData.title || !formData.description || !formData.category || !formData.fullPrompt
+          isSubmitting || !formData.title || !formData.description || !formData.category || !formData.fullPrompt || categories.length === 0
         }
         className="w-full brutalist-border-thick brutalist-shadow bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-3 transform hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >

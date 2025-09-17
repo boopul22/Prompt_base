@@ -111,8 +111,11 @@ export const categoriesService = {
   async updatePromptCount(categoryName: string, increment: number = 1) {
     try {
       const categories = await this.getAllCategories()
-      const category = categories.find(cat => cat.name === categoryName)
-      
+      // Use case-insensitive matching for category names
+      const category = categories.find(cat =>
+        cat.name.toLowerCase().trim() === categoryName.toLowerCase().trim()
+      )
+
       if (category && category.id) {
         const newCount = Math.max(0, (category.promptCount || 0) + increment)
         await this.updateCategory(category.id, { promptCount: newCount })

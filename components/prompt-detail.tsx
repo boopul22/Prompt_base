@@ -121,9 +121,9 @@ export function PromptDetail({ prompt, creator }: PromptDetailProps) {
 
       {/* Prompt Content */}
       <section className="mb-8">
-        <div className="brutalist-border-thick bg-card p-6 brutalist-shadow">
+        <div className="brutalist-border-thick bg-green-50 p-6 brutalist-shadow">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">THE PROMPT</h2>
+            <h2 className="text-2xl font-bold text-green-800">THE PROMPT</h2>
             {/* Desktop Buttons */}
             <div className="hidden sm:flex sm:flex-row gap-2">
               <Button

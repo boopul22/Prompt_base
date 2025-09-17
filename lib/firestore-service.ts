@@ -144,6 +144,21 @@ export const promptsService = {
     return { id: doc.id, ...doc.data() } as FirestorePrompt
   },
 
+  // Get prompt by ID
+  async getPromptById(promptId: string) {
+    try {
+      const docRef = doc(db, 'prompts', promptId)
+      const docSnap = await getDoc(docRef)
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as FirestorePrompt
+      }
+      return null
+    } catch (error) {
+      console.error('Error fetching prompt by ID:', error)
+      return null
+    }
+  },
+
   // Update prompt
   async updatePrompt(promptId: string, updates: Partial<FirestorePrompt>) {
     const docRef = doc(db, 'prompts', promptId)

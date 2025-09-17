@@ -1,7 +1,6 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { categoriesService, generateCategorySlug } from '@/lib/category-service'
-import { categories as staticCategories } from '@/lib/prompts-data'
 
 // Default categories with descriptions
 const defaultCategories = [
@@ -90,31 +89,20 @@ export async function migrateCategoriestoFirestore(systemUserId: string = 'syste
   }
 }
 
-// Function to get categories (from database or fallback to static)
+// Function to get categories from database only - NO AUTOMATIC SEEDING
 export async function getCategories() {
   try {
-    const dbCategories = await categoriesService.getActiveCategories()
-    
-    if (dbCategories.length === 0) {
-      console.log('No categories in database, attempting migration...')
-      await migrateCategoriestoFirestore()
-      return await categoriesService.getActiveCategories()
-    }
+    // Simply return categories from database - no seeding, no fallbacks
+    const allCategories = await categoriesService.getAllCategories()
 
-    return dbCategories
+    // Return only active categories
+    const activeCategories = allCategories.filter(cat => cat.isActive)
+
+    console.log(`Found ${activeCategories.length} active categories in database`)
+    return activeCategories
   } catch (error) {
     console.error('Error getting categories:', error)
-    // Fallback to static categories if database fails
-    return staticCategories
-      .filter(cat => cat !== 'All')
-      .map(name => ({
-        id: generateCategorySlug(name),
-        name,
-        slug: generateCategorySlug(name),
-        isActive: true,
-        promptCount: 0,
-        createdAt: new Date(),
-        createdBy: 'fallback'
-      }))
+    // Return empty array on error - no fallbacks
+    return []
   }
 }

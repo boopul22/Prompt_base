@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Trash2, Edit, Plus, Save, X } from "lucide-react"
+import { Trash2, Edit, Plus, Save, X, RefreshCw } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { categoriesService, Category, generateCategorySlug } from "@/lib/category-service"
+import { adminService } from "@/lib/admin-service"
 import { toast } from "react-hot-toast"
 
 export function AdminCategoriesList() {
@@ -17,6 +18,7 @@ export function AdminCategoriesList() {
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [isCleaningUp, setIsCleaningUp] = useState(false)
   const { user, userProfile } = useAuth()
 
   // Form states
@@ -131,6 +133,37 @@ export function AdminCategoriesList() {
     setFormData({ name: "", description: "", isActive: true })
   }
 
+  const handleCleanupDuplicates = async () => {
+    if (!user) return
+
+    if (!confirm('Are you sure you want to clean up duplicate categories? This will merge categories with the same slug and cannot be undone.')) {
+      return
+    }
+
+    setIsCleaningUp(true)
+    try {
+      const result = await adminService.cleanupDuplicateCategories(user.uid)
+
+      if (result.duplicatesFound.length > 0) {
+        const cleanupSummary = result.duplicatesFound
+          .map(dup => `Kept "${dup.kept}", removed "${dup.removed.join(', ')}"`)
+          .join('\n')
+
+        toast.success(`${result.message}\n\nDetails:\n${cleanupSummary}`)
+      } else {
+        toast.success(result.message)
+      }
+
+      // Reload categories
+      await loadCategories()
+    } catch (error) {
+      console.error('Error cleaning up categories:', error)
+      toast.error('Failed to clean up duplicate categories')
+    } finally {
+      setIsCleaningUp(false)
+    }
+  }
+
   if (!userProfile?.isAdmin) {
     return (
       <div className="brutalist-border bg-muted p-6 text-center brutalist-shadow-sm">
@@ -150,15 +183,26 @@ export function AdminCategoriesList() {
 
   return (
     <div className="space-y-4">
-      {/* Add Category Button */}
+      {/* Add Category Button and Cleanup */}
       {!showAddForm && !editingId && (
-        <Button
-          onClick={() => setShowAddForm(true)}
-          className="brutalist-border brutalist-shadow-sm bg-primary text-primary-foreground font-bold"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          ADD CATEGORY
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="brutalist-border brutalist-shadow-sm bg-primary text-primary-foreground font-bold"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            ADD CATEGORY
+          </Button>
+          <Button
+            onClick={handleCleanupDuplicates}
+            disabled={isCleaningUp}
+            variant="outline"
+            className="brutalist-border brutalist-shadow-sm bg-background hover:bg-muted font-bold"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isCleaningUp ? 'animate-spin' : ''}`} />
+            {isCleaningUp ? 'CLEANING...' : 'CLEANUP DUPLICATES'}
+          </Button>
+        </div>
       )}
 
       {/* Add/Edit Form */}

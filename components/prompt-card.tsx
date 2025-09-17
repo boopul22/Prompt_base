@@ -59,7 +59,9 @@ export function PromptCard({ prompt }: PromptCardProps) {
         </h3>
 
         <p className="text-muted-foreground mb-3 md:mb-4 text-sm md:text-base text-pretty leading-relaxed">
-          {prompt.description}
+          {prompt.description.length > 120
+            ? `${prompt.description.substring(0, 120)}...`
+            : prompt.description}
         </p>
 
         {/* Preview Image */}
@@ -83,13 +85,6 @@ export function PromptCard({ prompt }: PromptCardProps) {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-1.5 md:gap-2 mb-3 md:mb-4">
-          {prompt.tags.map((tag) => (
-            <span key={tag} className="text-xs bg-muted text-muted-foreground px-2 py-1 brutalist-border font-medium">
-              #{tag}
-            </span>
-          ))}
-        </div>
 
         <div className="text-xs md:text-sm text-muted-foreground">
           Added {

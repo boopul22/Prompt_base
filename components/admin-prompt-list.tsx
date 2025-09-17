@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Edit, Eye, Check, X } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Progress } from "@/components/ui/progress"
+import { Trash2, Edit, Eye, Check, X, Trash } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
@@ -13,6 +15,10 @@ import { toast } from "react-hot-toast"
 export function AdminPromptList() {
   const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedPrompts, setSelectedPrompts] = useState<string[]>([])
+  const [bulkDeleting, setBulkDeleting] = useState(false)
+  const [deleteProgress, setDeleteProgress] = useState(0)
+  const [deleteStage, setDeleteStage] = useState("")
   const { user, userProfile } = useAuth()
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export function AdminPromptList() {
 
   const handleReject = async (promptId: string) => {
     if (!user) return
-    
+
     try {
       await adminService.rejectPrompt(promptId, user.uid)
       await loadPrompts() // Reload prompts
@@ -69,6 +75,58 @@ export function AdminPromptList() {
     } catch (error) {
       console.error('Error rejecting prompt:', error)
       toast.error('Failed to reject prompt')
+    }
+  }
+
+  const handleSelectPrompt = (promptId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedPrompts(prev => [...prev, promptId])
+    } else {
+      setSelectedPrompts(prev => prev.filter(id => id !== promptId))
+    }
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedPrompts(prompts.map(prompt => prompt.id!))
+    } else {
+      setSelectedPrompts([])
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedPrompts.length === 0) {
+      toast.error('Please select prompts to delete')
+      return
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedPrompts.length} prompt(s)? This action cannot be undone.`)) {
+      return
+    }
+
+    setBulkDeleting(true)
+    setDeleteProgress(0)
+    setDeleteStage("Starting deletion...")
+
+    try {
+      await adminService.bulkDeletePrompts(
+        selectedPrompts,
+        user!.uid,
+        (progress, stage) => {
+          setDeleteProgress(progress)
+          setDeleteStage(stage)
+        }
+      )
+      setPrompts(prev => prev.filter(prompt => !selectedPrompts.includes(prompt.id!)))
+      setSelectedPrompts([])
+      toast.success(`Successfully deleted ${selectedPrompts.length} prompt(s)`)
+    } catch (error) {
+      console.error('Error bulk deleting prompts:', error)
+      toast.error('Failed to delete prompts')
+    } finally {
+      setBulkDeleting(false)
+      setDeleteProgress(0)
+      setDeleteStage("")
     }
   }
 
@@ -90,13 +148,75 @@ export function AdminPromptList() {
     )
   }
 
+  const isAllSelected = prompts.length > 0 && selectedPrompts.length === prompts.length
+  const isIndeterminate = selectedPrompts.length > 0 && selectedPrompts.length < prompts.length
+
   return (
     <div className="space-y-4">
+      {/* Bulk actions header */}
+      {prompts.length > 0 && (
+        <div className="brutalist-border bg-card p-4 brutalist-shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                checked={isAllSelected}
+                onCheckedChange={handleSelectAll}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className="font-bold text-sm">
+                {selectedPrompts.length === 0
+                  ? 'Select All'
+                  : `${selectedPrompts.length} selected`}
+              </span>
+            </div>
+
+            {selectedPrompts.length > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                disabled={bulkDeleting}
+                className="brutalist-border bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold"
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                {bulkDeleting ? 'Deleting...' : `Delete ${selectedPrompts.length}`}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Progress bar during bulk deletion */}
+      {bulkDeleting && (
+        <div className="brutalist-border bg-card p-4 brutalist-shadow-sm">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-sm text-destructive">
+                {deleteStage}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {Math.round(deleteProgress)}%
+              </span>
+            </div>
+            <Progress
+              value={deleteProgress}
+              className="h-3 brutalist-border bg-muted"
+            />
+          </div>
+        </div>
+      )}
+
       {prompts.map((prompt) => (
         <div key={prompt.id} className="brutalist-border bg-card p-4 brutalist-shadow-sm">
           <div className="flex justify-between items-start mb-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-3 flex-1">
+              <Checkbox
+                checked={selectedPrompts.includes(prompt.id!)}
+                onCheckedChange={(checked) => handleSelectPrompt(prompt.id!, checked as boolean)}
+                className="data-[state=checked]:bg-primary"
+              />
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
                 <Badge
                   variant="secondary"
                   className="brutalist-border bg-accent text-accent-foreground font-bold text-xs"
@@ -119,9 +239,10 @@ export function AdminPromptList() {
                     : new Date().toLocaleDateString()
                   }
                 </span>
+                </div>
+                <h3 className="font-bold text-lg mb-1">{prompt.title}</h3>
+                <p className="text-sm text-muted-foreground text-pretty">{prompt.description}</p>
               </div>
-              <h3 className="font-bold text-lg mb-1">{prompt.title}</h3>
-              <p className="text-sm text-muted-foreground text-pretty">{prompt.description}</p>
             </div>
           </div>
 
