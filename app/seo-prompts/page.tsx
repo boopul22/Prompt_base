@@ -40,14 +40,14 @@ export default function SEOPromptsPage() {
     "@type": "CollectionPage",
     "name": "Free SEO AI Prompts - ChatGPT Templates & Examples",
     "description": "Download free SEO AI prompts for keyword research, content optimization, and search engine ranking. Browse tested templates for SEO strategy and growth.",
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/seo-prompts`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/seo-prompts`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": prompts.length,
       "itemListElement": prompts.map((prompt, index) => ({
         "@type": "ListItem",
         "position": index + 1,
-        "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`
       }))
     },
     "breadcrumb": {
@@ -57,13 +57,13 @@ export default function SEOPromptsPage() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+          "item": process.env.NEXT_PUBLIC_SITE_URL
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "SEO Prompts",
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/seo-prompts`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/seo-prompts`
         }
       ]
     }

@@ -78,7 +78,7 @@ export default function HomePage() {
       <StructuredData isHomepage={true} />
       <HeroSection />
 
-      <section id="categories" className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">
+      <section className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">
         <div className="mb-6 md:mb-8">
           <nav className="mb-4 text-sm text-muted-foreground">
             <span className="text-foreground">Home</span>
@@ -101,9 +101,9 @@ export default function HomePage() {
               <h3 className="font-bold text-lg mb-2">SEO Prompts</h3>
               <p className="text-sm text-muted-foreground">Search engine optimization</p>
             </Link>
-            <Link href="/prompt-engineering" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
-              <h3 className="font-bold text-lg mb-2">Learn Prompting</h3>
-              <p className="text-sm text-muted-foreground">Master all AI platforms</p>
+            <Link href="/prompts" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
+              <h3 className="font-bold text-lg mb-2">All Prompts</h3>
+              <p className="text-sm text-muted-foreground">Browse complete collection</p>
             </Link>
           </div>
 
@@ -136,6 +136,11 @@ export default function HomePage() {
           </div>
         ) : (
           <>
+            <div className="mb-6 text-sm text-muted-foreground">
+              Showing {prompts.length} prompt{prompts.length !== 1 ? 's' : ''}
+              {selectedCategory !== "All" && ` in ${selectedCategory}`}
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {prompts.map((prompt) => (
                 <PromptCard key={prompt.id} prompt={prompt} />
@@ -149,6 +154,41 @@ export default function HomePage() {
                   <p className="text-muted-foreground text-sm md:text-base">
                     Try selecting a different category or check back later for new prompts.
                   </p>
+                </div>
+              </div>
+            )}
+
+            {prompts.length > 0 && (
+              <div className="mt-12 md:mt-16">
+                <h2 className="text-2xl md:text-3xl font-bold mb-6">Popular Prompts</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {prompts.slice(0, 4).map((prompt) => (
+                    <Link
+                      key={prompt.id}
+                      href={`/prompts/${prompt.slug}`}
+                      className="brutalist-border bg-card p-6 brutalist-shadow hover:bg-muted transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <span className="bg-accent/10 text-accent px-2 py-1 text-xs font-medium">
+                          {prompt.category}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-lg mb-3">{prompt.title}</h3>
+                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                        {prompt.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {prompt.tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="bg-muted px-2 py-1 text-xs">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-accent hover:text-accent/80 font-medium text-sm">
+                        View Prompt →
+                      </span>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}

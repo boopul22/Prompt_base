@@ -41,14 +41,14 @@ export default function ChatGPTPromptsPage() {
     "@type": "CollectionPage",
     "name": "Free ChatGPT Prompts - Templates & Examples",
     "description": "Download free ChatGPT prompts for content creation, marketing, SEO, and business. Browse tested templates, examples, and guides for better AI results.",
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/chatgpt-prompts`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/chatgpt-prompts`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": prompts.length,
       "itemListElement": prompts.map((prompt, index) => ({
         "@type": "ListItem",
         "position": index + 1,
-        "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`
       }))
     },
     "breadcrumb": {
@@ -58,13 +58,13 @@ export default function ChatGPTPromptsPage() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+          "item": process.env.NEXT_PUBLIC_SITE_URL
         },
         {
           "@type": "ListItem", 
           "position": 2,
           "name": "ChatGPT Prompts",
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/chatgpt-prompts`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/chatgpt-prompts`
         }
       ]
     }

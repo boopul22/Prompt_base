@@ -40,14 +40,14 @@ export default function MarketingPromptsPage() {
     "@type": "CollectionPage",
     "name": "Free Marketing AI Prompts - ChatGPT Templates & Examples",
     "description": "Download free marketing AI prompts for content creation, social media, email campaigns, and advertising. Browse tested templates for marketing strategy and growth.",
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/marketing`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/marketing`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": prompts.length,
       "itemListElement": prompts.map((prompt, index) => ({
         "@type": "ListItem",
         "position": index + 1,
-        "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`
       }))
     },
     "breadcrumb": {
@@ -57,13 +57,13 @@ export default function MarketingPromptsPage() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+          "item": process.env.NEXT_PUBLIC_SITE_URL
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Marketing Prompts",
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/marketing`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/marketing`
         }
       ]
     }

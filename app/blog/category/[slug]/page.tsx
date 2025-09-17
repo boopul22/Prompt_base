@@ -127,14 +127,14 @@ export default function BlogCategoryPage() {
     "@type": "CollectionPage",
     "name": `${category.name} Blog Posts | Free PromptBase`,
     "description": category.description || `Browse ${category.name} blog posts on AI, prompt engineering, and content creation.`,
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog/category/${categorySlug}`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/category/${categorySlug}`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": posts.length,
       "itemListElement": posts.map((post, index) => ({
         "@type": "ListItem",
         "position": index + 1,
-        "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog/${post.slug}`
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`
       }))
     },
     "breadcrumb": {
@@ -144,19 +144,19 @@ export default function BlogCategoryPage() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+          "item": process.env.NEXT_PUBLIC_SITE_URL
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Blog",
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
         },
         {
           "@type": "ListItem",
           "position": 3,
           "name": category.name,
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog/category/${categorySlug}`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/category/${categorySlug}`
         }
       ]
     }

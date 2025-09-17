@@ -604,3 +604,275 @@
 [debug] [2025-09-17T14:59:27.577Z] >>> [apiv2][body] POST https://firestore.googleapis.com/v1/projects/promptbase-d2908/databases/(default)/documents:runQuery {"structuredQuery":{"from":[{"collectionId":"categories","allDescendants":false}],"where":{"compositeFilter":{"op":"AND","filters":[]}},"orderBy":[{"field":{"fieldPath":"createdAt"},"direction":"DESCENDING"}],"limit":100},"explainOptions":{"analyze":true},"newTransaction":{"readOnly":{"readTime":"2025-09-17T14:59:27.577Z"}}}
 [debug] [2025-09-17T14:59:29.400Z] <<< [apiv2][status] POST https://firestore.googleapis.com/v1/projects/promptbase-d2908/databases/(default)/documents:runQuery 200
 [debug] [2025-09-17T14:59:29.400Z] <<< [apiv2][body] POST https://firestore.googleapis.com/v1/projects/promptbase-d2908/databases/(default)/documents:runQuery [{"transaction":"EeVZpsP39EfrIlkAEBEVEgz13Bc9jrJylo2YAvNmL9W3JxuSKOQ/euFr8vKNfTgM72vK2/gNLXF/8XQsxeguiitA37AnE/EbipHhHu2ik/qkeTfHIeXK0F4M2Ud8z+NioUZ69w=="},{"document":{"name":"projects/promptbase-d2908/databases/(default)/documents/categories/v76AWMWgK76T1vLe7Jn4","fields":{"name":{"stringValue":"CHATGPT"},"slug":{"stringValue":"chatgpt"},"description":{"stringValue":"Auto-created category for CHATGPT prompts"},"isActive":{"booleanValue":true},"createdBy":{"stringValue":"wBmuYaEB8YRM4fylSTtwhBorhl32"},"createdAt":{"timestampValue":"2025-09-17T14:38:40.936Z"},"promptCount":{"integerValue":"56"},"updatedAt":{"timestampValue":"2025-09-17T14:58:03.653Z"}},"createTime":"2025-09-17T14:38:40.980305Z","updateTime":"2025-09-17T14:58:03.683619Z"},"readTime":"2025-09-17T14:59:27.577Z"},{"document":{"name":"projects/promptbase-d2908/databases/(default)/documents/categories/CyMy0OzCRXn7sQRSEDQk","fields":{"name":{"stringValue":"ChatGPT"},"slug":{"stringValue":"chatgpt"},"description":{"stringValue":"Auto-created category for ChatGPT prompts"},"isActive":{"booleanValue":true},"createdBy":{"stringValue":"wBmuYaEB8YRM4fylSTtwhBorhl32"},"createdAt":{"timestampValue":"2025-09-17T14:17:47.092Z"},"promptCount":{"integerValue":"26"},"updatedAt":{"timestampValue":"2025-09-17T14:17:47.822Z"}},"createTime":"2025-09-17T14:17:47.126693Z","updateTime":"2025-09-17T14:17:47.861694Z"},"readTime":"2025-09-17T14:59:27.577Z","explainMetrics":{"planSummary":{"indexesUsed":[{"properties":"(createdAt DESC, __name__ DESC)","query_scope":"Collection"}]},"executionStats":{"resultsReturned":"2","executionDuration":"0.033929s","readOperations":"2","debugStats":{"index_entries_scanned":"2","documents_scanned":"2","billing_details":{"index_entries_billable":"0","documents_billable":"2","min_query_cost":"0","small_ops":"0"}}}}}]
+[debug] [2025-09-17T19:24:39.632Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.634Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.634Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.635Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.635Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.650Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.651Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.651Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.651Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.651Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.652Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.652Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.652Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.652Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.652Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.652Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.652Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.653Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.653Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.653Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.653Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.653Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.653Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.653Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.653Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.666Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.666Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.666Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.666Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.666Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.666Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.666Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.666Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.666Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.666Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.667Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.667Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.667Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.667Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.667Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.668Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.668Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.668Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.668Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.668Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.669Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.669Z] Checked if tokens are valid: false, expires at: 1758137116924
+[debug] [2025-09-17T19:24:39.669Z] > refreshing access token with scopes: []
+[debug] [2025-09-17T19:24:39.669Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-17T19:24:39.669Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.791Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.791Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.805Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:24:39.805Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.810Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.810Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.818Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:24:39.818Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.819Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.819Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.827Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.827Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.828Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.828Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.837Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.837Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.838Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.838Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.848Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.848Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.849Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.849Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.856Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.857Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.857Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.857Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.864Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:24:39.864Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.865Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.865Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.872Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.872Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.873Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.873Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.881Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:24:39.881Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:39.882Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-09-17T19:24:39.882Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-17T19:24:39.890Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:24:39.890Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:24:40.262Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:24:40.262Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.541Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:24:41.541Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:24:41.559Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:24:41.559Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:24:41.576Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:24:41.577Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.607Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:24:41.607Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.607Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:24:41.607Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.622Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:24:41.622Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.623Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:24:41.623Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:24:41.841Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:24:41.841Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:24:41.844Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:24:41.844Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)
+[debug] [2025-09-17T19:24:41.861Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:24:41.861Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)
+[debug] [2025-09-17T19:24:41.863Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:24:41.863Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:28:45.384Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.386Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.387Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.387Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:28:45.387Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.402Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.402Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.403Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.403Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.404Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.404Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.404Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:28:45.404Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.419Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.420Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.420Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.420Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.421Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:28:45.421Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:45.422Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:28:45.422Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:28:47.081Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:28:47.081Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:28:47.089Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:28:47.089Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:28:47.136Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:28:47.136Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.139Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:28:47.139Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.171Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:28:47.171Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.371Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:28:47.371Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:28:47.387Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:28:47.387Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.393Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:28:47.394Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.426Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:28:47.426Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:28:47.428Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:28:47.428Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)
+[debug] [2025-09-17T19:28:47.441Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:28:47.442Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)
+[debug] [2025-09-17T19:28:47.466Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:28:47.466Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:29:36.780Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.783Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.783Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.783Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.784Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.785Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:29:36.785Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.804Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.804Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.805Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.805Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.805Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.805Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.808Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:29:36.808Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.816Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.816Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.816Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.816Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] Checked if tokens are valid: true, expires at: 1758140678882
+[debug] [2025-09-17T19:29:36.817Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:29:36.817Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.817Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.817Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.818Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.818Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [none]
+[debug] [2025-09-17T19:29:36.819Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [none]
+[debug] [2025-09-17T19:29:36.820Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com x-goog-quota-user=projects/promptbase-d2908
+[debug] [2025-09-17T19:29:37.157Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:29:37.157Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:29:37.173Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:29:37.173Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:29:37.228Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:29:37.228Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.478Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com 403
+[debug] [2025-09-17T19:29:38.478Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseio.com [omitted]
+[debug] [2025-09-17T19:29:38.489Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:29:38.489Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.505Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:29:38.505Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.506Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:29:38.506Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.508Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com 200
+[debug] [2025-09-17T19:29:38.508Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasecrashlytics.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.518Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:29:38.518Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.519Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com 200
+[debug] [2025-09-17T19:29:38.519Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.549Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:29:38.549Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.550Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-17T19:29:38.550Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-09-17T19:29:38.743Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:29:38.744Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:29:38.748Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:29:38.748Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)
+[debug] [2025-09-17T19:29:38.766Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:29:38.766Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:29:38.868Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ 200
+[debug] [2025-09-17T19:29:38.868Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/promptbase-d2908/services/ [omitted]
+[debug] [2025-09-17T19:29:38.869Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-17T19:29:38.869Z] > authorizing via signed-in user (quadgraphics2021@gmail.com)

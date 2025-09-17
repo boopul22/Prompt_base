@@ -115,7 +115,7 @@ export default function BlogPage() {
     "@type": "Blog",
     "name": "Free PromptBase Blog - AI & Prompt Engineering Insights",
     "description": "Stay updated with the latest insights on AI, prompt engineering, and content creation. Learn from experts and discover new techniques for better AI interactions.",
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/blog`,
     "author": {
       "@type": "Organization",
       "name": "Free PromptBase"
@@ -124,7 +124,7 @@ export default function BlogPage() {
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.excerpt,
-      "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog/${post.slug}`,
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`,
       "datePublished": post.publishedAt || post.createdAt,
       "dateModified": post.updatedAt || post.publishedAt || post.createdAt
     }))

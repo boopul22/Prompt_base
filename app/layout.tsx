@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Free Prompt Base Team" }],
   creator: "Free Prompt Base",
   publisher: "Free Prompt Base",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
   alternates: {
     canonical: "/"
   },

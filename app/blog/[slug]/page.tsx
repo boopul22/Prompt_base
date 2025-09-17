@@ -280,7 +280,7 @@ function BlogPostClient({
             "@type": "BlogPosting",
             "headline": post.title,
             "description": post.excerpt,
-            "image": post.featuredImage || `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/og-image.png`,
+            "image": post.featuredImage || `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`,
             "author": {
               "@type": "Person",
               "name": author?.displayName || "Anonymous",
@@ -291,14 +291,14 @@ function BlogPostClient({
               "name": "Free PromptBase",
               "logo": {
                 "@type": "ImageObject",
-                "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/logo.png`
+                "url": `${process.env.NEXT_PUBLIC_SITE_URL}/logo.png`
               }
             },
             "datePublished": displayDate,
             "dateModified": post.updatedAt || displayDate,
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/blog/${post.slug}`
+              "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${post.slug}`
             },
             "articleSection": post.category,
             "keywords": post.tags.join(", "),

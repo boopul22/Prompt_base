@@ -40,14 +40,14 @@ export default function PromptEngineeringPage() {
     "@type": "CollectionPage",
     "name": "Free Prompt Engineering Guides - Learn AI Prompt Optimization",
     "description": "Learn prompt engineering with free guides, tutorials, and best practices. Master AI prompt optimization for ChatGPT, Claude, and other language models.",
-    "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompt-engineering`,
+    "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompt-engineering`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": prompts.length,
       "itemListElement": prompts.map((prompt, index) => ({
         "@type": "ListItem",
         "position": index + 1,
-        "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`
+        "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`
       }))
     },
     "breadcrumb": {
@@ -57,13 +57,13 @@ export default function PromptEngineeringPage() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+          "item": process.env.NEXT_PUBLIC_SITE_URL
         },
         {
           "@type": "ListItem",
           "position": 2,
           "name": "Prompt Engineering",
-          "item": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompt-engineering`
+          "item": `${process.env.NEXT_PUBLIC_SITE_URL}/prompt-engineering`
         }
       ]
     }

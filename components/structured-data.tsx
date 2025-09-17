@@ -14,20 +14,20 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "@type": "WebSite",
       "name": "Free Prompt Base",
       "description": "Access thousands of free AI prompts for ChatGPT, Claude, Gemini, and all AI models. Download tested prompts for content creation, marketing, SEO, and business growth.",
-      "url": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      "url": process.env.NEXT_PUBLIC_SITE_URL,
       "keywords": "free AI prompts, free ChatGPT prompts, Claude prompts, Gemini prompts, prompt engineering, AI prompt library, free prompt templates",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/search?q={search_term_string}`
+          "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL}/search?q={search_term_string}`
         },
         "query-input": "required name=search_term_string"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Free Prompt Base",
-        "url": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+        "url": process.env.NEXT_PUBLIC_SITE_URL
       },
       "mainEntity": {
         "@type": "CollectionPage",
@@ -40,7 +40,7 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Free Prompt Base",
-      "url": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+      "url": process.env.NEXT_PUBLIC_SITE_URL,
       "description": "Free collection of AI prompts for ChatGPT, Claude, Gemini, and all AI models. Includes prompt engineering guides for content creators, marketers, and developers",
       "sameAs": [
         "https://twitter.com/freepromptbase"
@@ -126,7 +126,7 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "@type": "Article",
       "headline": prompt.title,
       "description": prompt.description,
-      "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`,
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`,
       "datePublished": typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString(),
       "dateModified": typeof prompt.updatedAt === 'string' ? prompt.updatedAt : (typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString()),
       "author": {
@@ -138,11 +138,11 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "publisher": {
         "@type": "Organization",
         "name": "Free PromptBase",
-        "url": process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+        "url": process.env.NEXT_PUBLIC_SITE_URL
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`
+        "@id": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`
       },
       "keywords": prompt.tags.join(", "),
       "articleSection": prompt.category,
@@ -163,7 +163,7 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "dateCreated": typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString(),
       "genre": prompt.category,
       "keywords": prompt.tags.join(", "),
-      "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`,
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL}/prompts/${prompt.slug}`,
       "isAccessibleForFree": true,
       "license": "https://creativecommons.org/licenses/by/4.0/"
     }
