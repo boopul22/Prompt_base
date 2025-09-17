@@ -43,25 +43,26 @@ export default function HomePage() {
         }))
         setPrompts(serializedPrompts)
         
+        // Migration disabled - prompts should be managed through admin panel
         // Only migrate prompts if no prompts exist
-        if (approvedPrompts.length === 0) {
-          console.log('No prompts found, running migration...')
-          await migrateMockDataToFirestore()
-          // Reload prompts after migration
-          const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
-          
-          // Serialize timestamps for migrated prompts too
-          const serializedMigratedPrompts = migratedPrompts.map(prompt => ({
-            ...prompt,
-            createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-              ? prompt.createdAt.toDate().toISOString()
-              : prompt.createdAt,
-            updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
-              ? prompt.updatedAt.toDate().toISOString()
-              : prompt.updatedAt
-          }))
-          setPrompts(serializedMigratedPrompts)
-        }
+        // if (approvedPrompts.length === 0) {
+        //   console.log('No prompts found, running migration...')
+        //   await migrateMockDataToFirestore()
+        //   // Reload prompts after migration
+        //   const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
+        //
+        //   // Serialize timestamps for migrated prompts too
+        //   const serializedMigratedPrompts = migratedPrompts.map(prompt => ({
+        //     ...prompt,
+        //     createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+        //       ? prompt.createdAt.toDate().toISOString()
+        //       : prompt.createdAt,
+        //     updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+        //       ? prompt.updatedAt.toDate().toISOString()
+        //       : prompt.updatedAt
+        //   }))
+        //   setPrompts(serializedMigratedPrompts)
+        // }
       } catch (error) {
         console.error('Error loading data:', error)
       } finally {

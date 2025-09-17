@@ -190,9 +190,31 @@ export const adminService = {
 
     await batch.commit()
 
-    // Update category prompt counts
+    // Update category prompt counts and create categories if they don't exist
     for (const [categoryName, count] of categoryPromptCounts) {
       try {
+        // Check if category exists
+        const categories = await categoriesService.getAllCategories()
+        const existingCategory = categories.find(cat => cat.name === categoryName)
+
+        if (!existingCategory) {
+          // Create the category if it doesn't exist
+          const categorySlug = categoryName
+            .toLowerCase()
+            .replace(/[^a-z0-9 -]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim()
+
+          await categoriesService.createCategory({
+            name: categoryName,
+            slug: categorySlug,
+            description: `Auto-created category for ${categoryName} prompts`,
+            isActive: true,
+            createdBy: adminId
+          })
+        }
+
         await categoriesService.updatePromptCount(categoryName, count)
       } catch (error) {
         console.warn(`Failed to update prompt count for category "${categoryName}":`, error)
