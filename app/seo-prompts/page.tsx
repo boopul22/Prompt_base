@@ -14,7 +14,17 @@ export default function SEOPromptsPage() {
     const loadPrompts = async () => {
       try {
         const seoPrompts = await promptsService.getApprovedPrompts("SEO")
-        setPrompts(seoPrompts)
+        // Serialize timestamps before setting state
+        const serializedPrompts = seoPrompts.map(prompt => ({
+          ...prompt,
+          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+            ? prompt.createdAt.toDate().toISOString()
+            : prompt.createdAt,
+          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+            ? prompt.updatedAt.toDate().toISOString()
+            : prompt.updatedAt
+        }))
+        setPrompts(serializedPrompts)
       } catch (error) {
         console.error('Error loading SEO prompts:', error)
       } finally {
@@ -108,7 +118,7 @@ export default function SEOPromptsPage() {
       <div className="px-3 md:px-4 py-8 md:py-16 max-w-7xl mx-auto">
         <div className="mb-8 md:mb-12">
           <nav className="mb-4 text-sm text-muted-foreground">
-            <a href="/" className="hover:text-foreground">Home</a> / <span>SEO Prompts</span>
+            <Link href="/" className="hover:text-foreground">Home</Link> / <span>SEO Prompts</span>
           </nav>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-balance">

@@ -36,7 +36,10 @@ export default function HomePage() {
           ...prompt,
           createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
             ? prompt.createdAt.toDate().toISOString()
-            : prompt.createdAt || new Date().toISOString()
+            : prompt.createdAt || new Date().toISOString(),
+          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+            ? prompt.updatedAt.toDate().toISOString()
+            : prompt.updatedAt
         }))
         setPrompts(serializedPrompts)
         
@@ -52,7 +55,10 @@ export default function HomePage() {
             ...prompt,
             createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
               ? prompt.createdAt.toDate().toISOString()
-              : prompt.createdAt
+              : prompt.createdAt,
+            updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+              ? prompt.updatedAt.toDate().toISOString()
+              : prompt.updatedAt
           }))
           setPrompts(serializedMigratedPrompts)
         }

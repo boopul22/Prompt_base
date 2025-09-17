@@ -110,7 +110,10 @@ export default async function PromptPage({ params }: PromptPageProps) {
       ...prompt,
       createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
         ? prompt.createdAt.toDate().toISOString()
-        : prompt.createdAt
+        : prompt.createdAt,
+      updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+        ? prompt.updatedAt.toDate().toISOString()
+        : prompt.updatedAt
     }
 
     // Serialize related prompts
@@ -118,7 +121,10 @@ export default async function PromptPage({ params }: PromptPageProps) {
       ...p,
       createdAt: p.createdAt && typeof p.createdAt === 'object' && 'toDate' in p.createdAt
         ? p.createdAt.toDate().toISOString()
-        : p.createdAt
+        : p.createdAt,
+      updatedAt: p.updatedAt && typeof p.updatedAt === 'object' && 'toDate' in p.updatedAt
+        ? p.updatedAt.toDate().toISOString()
+        : p.updatedAt
     }))
 
     return (

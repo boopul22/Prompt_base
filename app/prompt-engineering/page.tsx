@@ -14,7 +14,17 @@ export default function PromptEngineeringPage() {
     const loadPrompts = async () => {
       try {
         const engineeringPrompts = await promptsService.getApprovedPrompts("Prompt Engineering")
-        setPrompts(engineeringPrompts)
+        // Serialize timestamps before setting state
+        const serializedPrompts = engineeringPrompts.map(prompt => ({
+          ...prompt,
+          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+            ? prompt.createdAt.toDate().toISOString()
+            : prompt.createdAt,
+          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+            ? prompt.updatedAt.toDate().toISOString()
+            : prompt.updatedAt
+        }))
+        setPrompts(serializedPrompts)
       } catch (error) {
         console.error('Error loading prompt engineering guides:', error)
       } finally {
@@ -112,7 +122,7 @@ export default function PromptEngineeringPage() {
       <div className="px-3 md:px-4 py-8 md:py-16 max-w-7xl mx-auto">
         <div className="mb-8 md:mb-12">
           <nav className="mb-4 text-sm text-muted-foreground">
-            <a href="/" className="hover:text-foreground">Home</a> / <span>Prompt Engineering</span>
+            <Link href="/" className="hover:text-foreground">Home</Link> / <span>Prompt Engineering</span>
           </nav>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-balance">

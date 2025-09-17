@@ -1,16 +1,32 @@
+"use client"
+
+import { useState } from "react"
 import { AddPromptForm } from "@/components/add-prompt-form"
 import { AdminPromptList } from "@/components/admin-prompt-list"
 import { AdminUsersList } from "@/components/admin-users-list"
 import { AdminCategoriesList } from "@/components/admin-categories-list"
+import { AdminBlogList } from "@/components/admin-blog-list"
+import { AdminBlogCategories } from "@/components/admin-blog-categories"
 import { AdminStats } from "@/components/admin-stats"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { ArrowLeft } from "lucide-react"
 
 export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState("dashboard")
+
+  const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: "📊" },
+    { id: "prompts", label: "Prompts", icon: "💭" },
+    { id: "blog", label: "Blog", icon: "📝" },
+    { id: "categories", label: "Categories", icon: "📂" },
+    { id: "users", label: "Users", icon: "👥" }
+  ]
+
   return (
     <main className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-6 md:py-8">
+      <div className="max-w-7xl mx-auto px-3 md:px-4 py-6 md:py-8">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <Button
@@ -26,43 +42,92 @@ export default function AdminPage() {
 
           <div className="brutalist-border-thick bg-primary text-primary-foreground p-4 md:p-8 brutalist-shadow transform -rotate-1 mb-6 md:mb-8">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 md:mb-4">ADMIN PANEL</h1>
-            <p className="text-base md:text-xl">Add new viral prompts and manage existing ones</p>
+            <p className="text-base md:text-xl">Manage prompts, blog posts, categories, and users</p>
           </div>
         </div>
 
-        {/* Admin Stats */}
-        <section className="mb-6 md:mb-8">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">DASHBOARD OVERVIEW</h2>
-          <AdminStats />
-        </section>
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mb-8">
-          {/* Add New Prompt Form */}
-          <section>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">ADD NEW PROMPT</h2>
-            <AddPromptForm />
-          </section>
-
-          {/* Category Management */}
-          <section>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE CATEGORIES</h2>
-            <AdminCategoriesList />
-          </section>
+        {/* Navigation Tabs */}
+        <div className="mb-6 md:mb-8">
+          <div className="brutalist-border bg-card p-2 brutalist-shadow">
+            <div className="flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <Button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  variant={activeTab === tab.id ? "default" : "outline"}
+                  className="brutalist-border font-bold text-sm flex items-center gap-2"
+                >
+                  <span>{tab.icon}</span>
+                  {tab.label}
+                  {tab.id === "blog" && (
+                    <Badge variant="secondary" className="brutalist-border">
+                      NEW
+                    </Badge>
+                  )}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
-          {/* Existing Prompts List */}
+        {/* Tab Content */}
+        {activeTab === "dashboard" && (
           <section>
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE PROMPTS</h2>
-            <AdminPromptList />
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">DASHBOARD OVERVIEW</h2>
+            <AdminStats />
           </section>
+        )}
 
-          {/* User Management */}
+        {activeTab === "prompts" && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+              <section>
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">ADD NEW PROMPT</h2>
+                <AddPromptForm />
+              </section>
+              <section>
+                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE PROMPTS</h2>
+                <AdminPromptList />
+              </section>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "blog" && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
+              <section className="xl:col-span-2">
+                <AdminBlogList />
+              </section>
+              <section>
+                <AdminBlogCategories />
+              </section>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "categories" && (
+          <section>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE CATEGORIES</h2>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+              <div>
+                <h3 className="text-lg font-bold mb-4">Prompt Categories</h3>
+                <AdminCategoriesList />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold mb-4">Blog Categories</h3>
+                <AdminBlogCategories />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === "users" && (
           <section>
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">MANAGE USERS</h2>
             <AdminUsersList />
           </section>
-        </div>
+        )}
       </div>
     </main>
   )

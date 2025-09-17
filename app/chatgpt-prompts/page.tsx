@@ -5,6 +5,7 @@ import { PromptCard } from "@/components/prompt-card"
 import { StructuredData } from "@/components/structured-data"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
 import { Metadata } from "next"
+import Link from "next/link"
 
 export default function ChatGPTPromptsPage() {
   const [prompts, setPrompts] = useState<FirestorePrompt[]>([])
@@ -14,7 +15,17 @@ export default function ChatGPTPromptsPage() {
     const loadPrompts = async () => {
       try {
         const chatGPTPrompts = await promptsService.getApprovedPrompts("ChatGPT")
-        setPrompts(chatGPTPrompts)
+        // Serialize timestamps before setting state
+        const serializedPrompts = chatGPTPrompts.map(prompt => ({
+          ...prompt,
+          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+            ? prompt.createdAt.toDate().toISOString()
+            : prompt.createdAt,
+          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+            ? prompt.updatedAt.toDate().toISOString()
+            : prompt.updatedAt
+        }))
+        setPrompts(serializedPrompts)
       } catch (error) {
         console.error('Error loading ChatGPT prompts:', error)
       } finally {
@@ -71,7 +82,7 @@ export default function ChatGPTPromptsPage() {
       <div className="px-3 md:px-4 py-8 md:py-16 max-w-7xl mx-auto">
         <div className="mb-8 md:mb-12">
           <nav className="mb-4 text-sm text-muted-foreground">
-            <a href="/" className="hover:text-foreground">Home</a> / <span>ChatGPT Prompts</span>
+            <Link href="/" className="hover:text-foreground">Home</Link> / <span>ChatGPT Prompts</span>
           </nav>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 text-balance">
