@@ -93,13 +93,29 @@ export default async function PromptPage({ params }: PromptPageProps) {
     const allPrompts = await promptsService.getApprovedPrompts(prompt.category)
     const relatedPrompts = allPrompts.filter((p) => p.id !== prompt.id).slice(0, 3)
 
+    // Serialize the prompt data to avoid timestamp serialization issues
+    const serializedPrompt = {
+      ...prompt,
+      createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+        ? prompt.createdAt.toDate().toISOString()
+        : prompt.createdAt
+    }
+
+    // Serialize related prompts
+    const serializedRelatedPrompts = relatedPrompts.map(p => ({
+      ...p,
+      createdAt: p.createdAt && typeof p.createdAt === 'object' && 'toDate' in p.createdAt
+        ? p.createdAt.toDate().toISOString()
+        : p.createdAt
+    }))
+
     return (
       <main className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-3 md:px-4 py-6 md:py-8">
           <PromptDetailClient 
-            prompt={prompt} 
+            prompt={serializedPrompt} 
             creator={creator} 
-            relatedPrompts={relatedPrompts}
+            relatedPrompts={serializedRelatedPrompts}
           />
         </div>
       </main>

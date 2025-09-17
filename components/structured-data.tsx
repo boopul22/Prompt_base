@@ -127,8 +127,8 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
       "headline": prompt.title,
       "description": prompt.description,
       "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`,
-      "datePublished": prompt.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-      "dateModified": prompt.updatedAt?.toDate?.()?.toISOString() || prompt.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      "datePublished": typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString(),
+      "dateModified": typeof prompt.updatedAt === 'string' ? prompt.updatedAt : (typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString()),
       "author": {
         "@type": "Person",
         "name": creator?.displayName || creator?.email || "Free PromptBase Team",
@@ -160,7 +160,7 @@ export function StructuredData({ prompt, creator, isHomepage }: StructuredDataPr
         "@type": "Person",
         "name": creator?.displayName || creator?.email || "Free PromptBase Team"
       },
-      "dateCreated": prompt.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+      "dateCreated": typeof prompt.createdAt === 'string' ? prompt.createdAt : new Date().toISOString(),
       "genre": prompt.category,
       "keywords": prompt.tags.join(", "),
       "url": `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/prompts/${prompt.slug}`,

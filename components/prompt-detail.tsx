@@ -74,11 +74,7 @@ export function PromptDetail({ prompt, creator }: PromptDetailProps) {
             {prompt.category.toUpperCase()}
           </Badge>
           <span className="text-sm text-muted-foreground">
-            Added {
-              'createdAt' in prompt && prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-                ? prompt.createdAt.toDate().toLocaleDateString()
-                : new Date(prompt.createdAt as string).toLocaleDateString()
-            }
+            Added {new Date(prompt.createdAt as string).toLocaleDateString()}
           </span>
           {creator && (
             <div className="flex items-center gap-2 flex-wrap">

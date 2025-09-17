@@ -71,11 +71,7 @@ export function PromptCard({ prompt }: PromptCardProps) {
         </div>
 
         <div className="text-xs md:text-sm text-muted-foreground">
-          Added {
-            'createdAt' in prompt && prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-              ? prompt.createdAt.toDate().toLocaleDateString()
-              : new Date(prompt.createdAt as string).toLocaleDateString()
-          }
+          Added {new Date(prompt.createdAt as string).toLocaleDateString()}
         </div>
       </article>
     </Link>
