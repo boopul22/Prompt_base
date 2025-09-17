@@ -1,16 +1,17 @@
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  updateDoc, 
-  query, 
-  where, 
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
   orderBy,
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { usersService, promptsService, generateSlug } from '@/lib/firestore-service'
+import { categoriesService } from '@/lib/category-service'
 
 export interface AdminStats {
   totalUsers: number
@@ -155,6 +156,7 @@ export const adminService = {
   // Bulk create prompts
   async bulkCreatePrompts(prompts: any[], adminId: string) {
     const batch = writeBatch(db)
+    const categoryPromptCounts = new Map<string, number>()
 
     for (const prompt of prompts) {
       if (!prompt.title || !prompt.fullPrompt) {
@@ -164,11 +166,12 @@ export const adminService = {
 
       const slug = generateSlug(prompt.title)
       const newPromptRef = doc(collection(db, "prompts"))
+      const category = prompt.category || "Uncategorized"
 
       const newPrompt = {
         title: prompt.title,
         description: prompt.description || "",
-        category: prompt.category || "Uncategorized",
+        category,
         fullPrompt: prompt.fullPrompt,
         slug,
         tags: prompt.tags ? prompt.tags.split(",").map((tag: string) => tag.trim()) : [],
@@ -180,8 +183,20 @@ export const adminService = {
         updatedAt: serverTimestamp(),
       }
       batch.set(newPromptRef, newPrompt)
+
+      // Track category counts
+      categoryPromptCounts.set(category, (categoryPromptCounts.get(category) || 0) + 1)
     }
 
     await batch.commit()
+
+    // Update category prompt counts
+    for (const [categoryName, count] of categoryPromptCounts) {
+      try {
+        await categoriesService.updatePromptCount(categoryName, count)
+      } catch (error) {
+        console.warn(`Failed to update prompt count for category "${categoryName}":`, error)
+      }
+    }
   }
 }
