@@ -1,0 +1,41 @@
+# Robots.txt for Free Prompt Base
+# Updated: January 16, 2025
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://freepromptbase.com/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Block common bot paths
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /*.json$
+Disallow: /*.js$
+Disallow: /*.css$
+
+# Allow search engines to crawl main content
+Allow: /chatgpt-prompts
+Allow: /marketing
+Allow: /seo-prompts
+Allow: /prompt-engineering
+Allow: /prompts/
+
+# User-agent specific rules
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block specific bots that don't follow rules
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Crawl-delay: 10
