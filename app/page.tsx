@@ -30,7 +30,15 @@ export default function HomePage() {
         console.log('Loaded prompts:', approvedPrompts.length, 'Category:', selectedCategory)
         
         setCategories(dbCategories)
-        setPrompts(approvedPrompts)
+        
+        // Serialize timestamps before setting state
+        const serializedPrompts = approvedPrompts.map(prompt => ({
+          ...prompt,
+          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+            ? prompt.createdAt.toDate().toISOString()
+            : prompt.createdAt || new Date().toISOString()
+        }))
+        setPrompts(serializedPrompts)
         
         // Only migrate prompts if no prompts exist
         if (approvedPrompts.length === 0) {
@@ -38,7 +46,15 @@ export default function HomePage() {
           await migrateMockDataToFirestore()
           // Reload prompts after migration
           const migratedPrompts = await promptsService.getApprovedPrompts(selectedCategory)
-          setPrompts(migratedPrompts)
+          
+          // Serialize timestamps for migrated prompts too
+          const serializedMigratedPrompts = migratedPrompts.map(prompt => ({
+            ...prompt,
+            createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+              ? prompt.createdAt.toDate().toISOString()
+              : prompt.createdAt
+          }))
+          setPrompts(serializedMigratedPrompts)
         }
       } catch (error) {
         console.error('Error loading data:', error)

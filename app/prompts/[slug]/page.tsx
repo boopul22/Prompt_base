@@ -86,7 +86,19 @@ export default async function PromptPage({ params }: PromptPageProps) {
     // Get creator details
     let creator = null
     if (prompt.createdBy) {
-      creator = await usersService.getUserById(prompt.createdBy)
+      const rawCreator = await usersService.getUserById(prompt.createdBy)
+      if (rawCreator) {
+        // Serialize timestamps in user profile
+        creator = {
+          ...rawCreator,
+          createdAt: rawCreator.createdAt && typeof rawCreator.createdAt === 'object' && 'toDate' in rawCreator.createdAt
+            ? rawCreator.createdAt.toDate().toISOString()
+            : rawCreator.createdAt,
+          updatedAt: rawCreator.updatedAt && typeof rawCreator.updatedAt === 'object' && 'toDate' in rawCreator.updatedAt
+            ? rawCreator.updatedAt.toDate().toISOString()
+            : rawCreator.updatedAt
+        }
+      }
     }
 
     // Get related prompts
