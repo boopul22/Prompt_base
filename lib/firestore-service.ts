@@ -89,16 +89,9 @@ export const promptsService = {
       const snapshot = await getDocs(q)
       const prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
       
-      // Sort on client side instead of server side to avoid index requirements
-      return prompts.sort((a, b) => {
-        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt 
-          ? a.createdAt.toDate().getTime() 
-          : new Date().getTime()
-        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt 
-          ? b.createdAt.toDate().getTime() 
-          : new Date().getTime()
-        return bTime - aTime // Descending order (newest first)
-      })
+      // Skip sorting for now to avoid timestamp issues
+      // Return prompts in document order (Firestore typically returns in creation order)
+      return prompts
     } catch (error) {
       console.error('Error fetching approved prompts:', error)
       return []
@@ -112,16 +105,9 @@ export const promptsService = {
       const snapshot = await getDocs(collection(db, 'prompts'))
       const prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
       
-      // Sort on client side
-      return prompts.sort((a, b) => {
-        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt 
-          ? a.createdAt.toDate().getTime() 
-          : new Date().getTime()
-        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt 
-          ? b.createdAt.toDate().getTime() 
-          : new Date().getTime()
-        return bTime - aTime // Descending order (newest first)
-      })
+      // Skip sorting for now to avoid timestamp issues
+      // Return prompts in document order (Firestore typically returns in creation order)
+      return prompts
     } catch (error) {
       console.error('Error fetching all prompts:', error)
       return []
@@ -183,6 +169,113 @@ export const promptsService = {
       status: 'approved',
       approvedBy: adminId
     })
+  },
+
+  // Get related prompts by category (efficient version for detail pages)
+  async getRelatedPrompts(currentPromptId: string, category: string, limitCount: number = 3) {
+    try {
+      const db = getFirestoreInstance()
+
+      // Simple query to avoid index requirements - get approved prompts in category
+      const q = query(
+        collection(db, 'prompts'),
+        where('status', '==', 'approved'),
+        where('category', '==', category),
+        limit(limitCount + 5) // Get extra to account for filtering and have more options
+      )
+
+      const snapshot = await getDocs(q)
+      const prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
+
+      // Filter out current prompt and apply limit on client side
+      const filteredPrompts = prompts.filter(p => p.id !== currentPromptId)
+
+      // Return limited number of related prompts
+      return filteredPrompts.slice(0, limitCount)
+    } catch (error) {
+      console.error('Error fetching related prompts:', error)
+      return []
+    }
+  },
+
+  // Get lightweight prompts for list views (only essential fields)
+  async getLightweightPrompts(category?: string, limitCount?: number) {
+    try {
+      let q;
+
+      const db = getFirestoreInstance()
+
+      if (category && category !== 'All') {
+        q = query(
+          collection(db, 'prompts'),
+          where('status', '==', 'approved'),
+          where('category', '==', category),
+          limit(limitCount || 1000)
+        )
+      } else {
+        q = query(
+          collection(db, 'prompts'),
+          where('status', '==', 'approved'),
+          limit(limitCount || 1000)
+        )
+      }
+
+      const snapshot = await getDocs(q)
+
+      // Only return essential fields for list views
+      const lightweightPrompts = snapshot.docs.map(doc => {
+        const data = doc.data()
+        return {
+          id: doc.id,
+          title: data.title || '',
+          description: data.description || '',
+          category: data.category || '',
+          slug: data.slug || '',
+          tags: data.tags || [],
+          createdAt: data.createdAt
+        }
+      })
+
+      // Skip sorting for now to avoid timestamp issues
+      // Return prompts in document order (Firestore typically returns in creation order)
+      return lightweightPrompts
+    } catch (error) {
+      console.error('Error fetching lightweight prompts:', error)
+      return []
+    }
+  },
+
+  // Get paginated prompts for scalable loading
+  async getPaginatedPrompts(category?: string, page: number = 1, pageSize: number = 12) {
+    try {
+      const db = getFirestoreInstance()
+      const offset = (page - 1) * pageSize
+
+      // Get all prompts in category first (we need to sort client-side due to index limitations)
+      const allPrompts = await this.getLightweightPrompts(category, 1000)
+
+      // Apply pagination
+      const paginatedPrompts = allPrompts.slice(offset, offset + pageSize)
+
+      return {
+        prompts: paginatedPrompts,
+        total: allPrompts.length,
+        page,
+        pageSize,
+        totalPages: Math.ceil(allPrompts.length / pageSize),
+        hasMore: offset + pageSize < allPrompts.length
+      }
+    } catch (error) {
+      console.error('Error fetching paginated prompts:', error)
+      return {
+        prompts: [],
+        total: 0,
+        page,
+        pageSize,
+        totalPages: 0,
+        hasMore: false
+      }
+    }
   },
 
   // Reject prompt (admin only)

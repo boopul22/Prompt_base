@@ -1,235 +1,133 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { PromptCard } from "@/components/prompt-card"
-import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
 import { StructuredData } from "@/components/structured-data"
+import { HomePageClient } from "@/components/home-page-client"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
+import { getCategories } from "@/lib/migrate-categories"
+import { Category } from "@/lib/category-service"
 
 interface SerializedPrompt extends Omit<FirestorePrompt, 'createdAt' | 'updatedAt'> {
   createdAt: string
   updatedAt?: string
 }
-import { getCategories } from "@/lib/migrate-categories"
-import { Category } from "@/lib/category-service"
 
-export default function HomePage() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [prompts, setPrompts] = useState<SerializedPrompt[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
+export default async function HomePage() {
+  try {
+    // Load data server-side
+    const [dbCategories, approvedPrompts] = await Promise.all([
+      getCategories().catch(error => {
+        console.error('Categories loading failed:', error)
+        return [] as Category[]
+      }),
+      promptsService.getPaginatedPrompts(undefined, 1, 12).catch(error => {
+        console.error('Prompts loading failed:', error)
+        return { prompts: [] as FirestorePrompt[], total: 0, page: 1, pageSize: 12, totalPages: 0, hasMore: false }
+      })
+    ])
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true)
+    // Serialize timestamps for client component
+    const serializedPrompts = approvedPrompts.prompts.map(prompt => ({
+      ...prompt,
+      createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+        ? prompt.createdAt.toDate().toISOString()
+        : prompt.createdAt || new Date().toISOString(),
+      updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+        ? prompt.updatedAt.toDate().toISOString()
+        : prompt.updatedAt
+    }))
 
-        // Add timeout to prevent hanging
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Loading timeout')), 10000)
-        )
+    // Serialize category timestamps to avoid client component warnings
+    const serializedCategories = dbCategories.map(category => ({
+      ...category,
+      createdAt: category.createdAt && typeof category.createdAt === 'object' && 'toDate' in category.createdAt
+        ? category.createdAt.toDate().toISOString()
+        : category.createdAt || new Date().toISOString(),
+      updatedAt: category.updatedAt && typeof category.updatedAt === 'object' && 'toDate' in category.updatedAt
+        ? category.updatedAt.toDate().toISOString()
+        : category.updatedAt
+    }))
 
-        // Load categories
-        const categoriesPromise = getCategories().catch(error => {
-          console.error('Categories loading failed:', error)
-          return []
-        })
-
-        const dbCategories = await Promise.race([categoriesPromise, timeoutPromise]) as Category[]
-
-        // Load prompts with timeout
-        const promptsPromise = promptsService.getApprovedPrompts(selectedCategory).catch(error => {
-          console.error('Prompts loading failed:', error)
-          return []
-        })
-
-        const approvedPrompts = await Promise.race([promptsPromise, timeoutPromise]) as FirestorePrompt[]
-
-        setCategories(dbCategories)
-
-        // Serialize timestamps before setting state
-        const serializedPrompts = approvedPrompts.map(prompt => ({
-          ...prompt,
-          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-            ? prompt.createdAt.toDate().toISOString()
-            : prompt.createdAt || new Date().toISOString(),
-          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
-            ? prompt.updatedAt.toDate().toISOString()
-            : prompt.updatedAt
-        }))
-        setPrompts(serializedPrompts)
-
-      } catch (error) {
-        console.error('Error loading data:', error)
-        setCategories([])
-        setPrompts([])
-      } finally {
-        setLoading(false)
-      }
+    const initialPagination = {
+      currentPage: approvedPrompts.page,
+      totalPages: approvedPrompts.totalPages,
+      totalItems: approvedPrompts.total,
+      pageSize: approvedPrompts.pageSize,
+      hasMore: approvedPrompts.hasMore
     }
 
-    loadData()
-  }, [selectedCategory])
+    return (
+      <main className="min-h-screen bg-background">
+        <StructuredData isHomepage={true} />
+        <HeroSection />
 
-  return (
-    <main className="min-h-screen bg-background">
-      <StructuredData isHomepage={true} />
-      <HeroSection />
+        <section className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">
+          <HomePageClient
+            initialPrompts={serializedPrompts}
+            initialCategories={serializedCategories}
+            initialSelectedCategory="All"
+            initialPagination={initialPagination}
+          />
+        </section>
 
-      <section className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">
-        <div className="mb-6 md:mb-8">
-          <nav className="mb-4 text-sm text-muted-foreground">
-            <span className="text-foreground">Home</span>
-          </nav>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 text-balance">FREE AI PROMPTS FOR CONTENT CREATION</h1>
-          <p className="text-base md:text-lg text-muted-foreground mb-4 md:mb-6 text-pretty">
-            Browse our free collection of AI prompts for ChatGPT, Claude, Gemini, and all models. Download tested marketing templates, and prompt engineering guides for SEO, social media, and business growth.
-          </p>
+        <section className="px-3 md:px-4 py-8 md:py-12 bg-muted/30">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center">
+              Learn Prompt Engineering
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground mb-8 md:mb-12 text-center max-w-4xl mx-auto">
+              Master the art of creating effective AI prompts with our comprehensive guides and tutorials. Start getting better results from ChatGPT, Claude, Gemini, and all AI platforms.
+            </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Link href="/chatgpt-prompts" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
-              <h3 className="font-bold text-lg mb-2">ChatGPT Prompts</h3>
-              <p className="text-sm text-muted-foreground">OpenAI GPT-4 and GPT-3.5 templates</p>
-            </Link>
-            <Link href="/marketing" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
-              <h3 className="font-bold text-lg mb-2">Marketing</h3>
-              <p className="text-sm text-muted-foreground">Content creation and social media</p>
-            </Link>
-            <Link href="/seo-prompts" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
-              <h3 className="font-bold text-lg mb-2">SEO Prompts</h3>
-              <p className="text-sm text-muted-foreground">Search engine optimization</p>
-            </Link>
-            <Link href="/prompts" className="brutalist-border bg-card p-4 brutalist-shadow hover:bg-muted transition-colors">
-              <h3 className="font-bold text-lg mb-2">All Prompts</h3>
-              <p className="text-sm text-muted-foreground">Browse complete collection</p>
-            </Link>
-          </div>
-
-          {categories.length > 0 && (
-            <CategoryFilter
-              categories={['All', ...categories.map(cat => cat.name)]}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-          )}
-
-          {categories.length === 0 && !loading && (
-            <div className="brutalist-border bg-muted p-6 text-center brutalist-shadow-sm mb-6">
-              <h3 className="text-lg font-bold mb-2">NO CATEGORIES AVAILABLE</h3>
-              <p className="text-sm text-muted-foreground">
-                Categories are being set up. Check back soon for organized prompt collections.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {loading ? (
-          <div className="text-center py-8 md:py-12">
-            <div className="brutalist-border bg-card p-6 md:p-8 brutalist-shadow">
-              <h3 className="text-xl md:text-2xl font-bold mb-2">LOADING PROMPTS...</h3>
-              <p className="text-muted-foreground text-sm md:text-base">
-                Please wait while we fetch the latest prompts.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="mb-6 text-sm text-muted-foreground">
-              Showing {prompts.length} prompt{prompts.length !== 1 ? 's' : ''}
-              {selectedCategory !== "All" && ` in ${selectedCategory}`}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {prompts.map((prompt) => (
-                <PromptCard key={prompt.id} prompt={prompt} />
-              ))}
-            </div>
-
-            {prompts.length === 0 && (
-              <div className="text-center py-8 md:py-12">
-                <div className="brutalist-border bg-card p-6 md:p-8 brutalist-shadow">
-                  <h3 className="text-xl md:text-2xl font-bold mb-2">NO PROMPTS FOUND</h3>
-                  <p className="text-muted-foreground text-sm md:text-base">
-                    Try selecting a different category or check back later for new prompts.
-                  </p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="brutalist-border bg-card p-6 brutalist-shadow">
+                <h3 className="font-bold text-lg mb-3">Beginner's Guide</h3>
+                <p className="text-muted-foreground mb-4">Learn the fundamentals of prompt writing and AI interaction basics.</p>
+                <a href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
+                  Start Learning →
+                </a>
               </div>
-            )}
-
-            {prompts.length > 0 && (
-              <div className="mt-12 md:mt-16">
-                <h2 className="text-2xl md:text-3xl font-bold mb-6">Popular Prompts</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {prompts.slice(0, 4).map((prompt) => (
-                    <Link
-                      key={prompt.id}
-                      href={`/prompts/${prompt.slug}`}
-                      className="brutalist-border bg-card p-6 brutalist-shadow hover:bg-muted transition-colors"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <span className="bg-accent/10 text-accent px-2 py-1 text-xs font-medium">
-                          {prompt.category}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-lg mb-3">{prompt.title}</h3>
-                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        {prompt.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {prompt.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="bg-muted px-2 py-1 text-xs">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-accent hover:text-accent/80 font-medium text-sm">
-                        View Prompt →
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+              <div className="brutalist-border bg-card p-6 brutalist-shadow">
+                <h3 className="font-bold text-lg mb-3">Advanced Techniques</h3>
+                <p className="text-muted-foreground mb-4">Discover sophisticated prompting strategies for complex AI tasks.</p>
+                <a href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
+                  Advanced Methods →
+                </a>
               </div>
-            )}
-          </>
-        )}
-      </section>
-
-      <section className="px-3 md:px-4 py-8 md:py-12 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center">
-            Learn Prompt Engineering
-          </h2>
-          <p className="text-base md:text-lg text-muted-foreground mb-8 md:mb-12 text-center max-w-4xl mx-auto">
-            Master the art of creating effective AI prompts with our comprehensive guides and tutorials. Start getting better results from ChatGPT, Claude, Gemini, and all AI platforms.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="brutalist-border bg-card p-6 brutalist-shadow">
-              <h3 className="font-bold text-lg mb-3">Beginner's Guide</h3>
-              <p className="text-muted-foreground mb-4">Learn the fundamentals of prompt writing and AI interaction basics.</p>
-              <Link href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
-                Start Learning →
-              </Link>
-            </div>
-            <div className="brutalist-border bg-card p-6 brutalist-shadow">
-              <h3 className="font-bold text-lg mb-3">Advanced Techniques</h3>
-              <p className="text-muted-foreground mb-4">Discover sophisticated prompting strategies for complex AI tasks.</p>
-              <Link href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
-                Advanced Methods →
-              </Link>
-            </div>
-            <div className="brutalist-border bg-card p-6 brutalist-shadow">
-              <h3 className="font-bold text-lg mb-3">Best Practices</h3>
-              <p className="text-muted-foreground mb-4">Follow proven methods and industry standards for prompt engineering.</p>
-              <Link href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
-                View Guidelines →
-              </Link>
+              <div className="brutalist-border bg-card p-6 brutalist-shadow">
+                <h3 className="font-bold text-lg mb-3">Best Practices</h3>
+                <p className="text-muted-foreground mb-4">Follow proven methods and industry standards for prompt engineering.</p>
+                <a href="/prompt-engineering" className="text-accent hover:text-accent/80 font-medium">
+                  View Guidelines →
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </main>
-  )
+        </section>
+      </main>
+    )
+  } catch (error) {
+    console.error('Error loading homepage:', error)
+
+    // Fallback UI for error cases
+    return (
+      <main className="min-h-screen bg-background">
+        <StructuredData isHomepage={true} />
+        <HeroSection />
+
+        <section className="px-3 md:px-4 py-8 md:py-12 max-w-7xl mx-auto">
+          <HomePageClient
+            initialPrompts={[]}
+            initialCategories={[]}
+            initialSelectedCategory="All"
+            initialPagination={{
+              currentPage: 1,
+              totalPages: 0,
+              totalItems: 0,
+              pageSize: 12,
+              hasMore: false
+            }}
+          />
+        </section>
+      </main>
+    )
+  }
 }

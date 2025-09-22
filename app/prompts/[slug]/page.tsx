@@ -101,9 +101,8 @@ export default async function PromptPage({ params }: PromptPageProps) {
       }
     }
 
-    // Get related prompts
-    const allPrompts = await promptsService.getApprovedPrompts(prompt.category)
-    const relatedPrompts = allPrompts.filter((p) => p.id !== prompt.id).slice(0, 3)
+    // Get related prompts (efficient query - only loads what we need)
+    const relatedPrompts = await promptsService.getRelatedPrompts(prompt.id, prompt.category, 3)
 
     // Serialize the prompt data to avoid timestamp serialization issues
     const serializedPrompt = {
