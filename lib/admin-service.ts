@@ -111,13 +111,13 @@ export const adminService = {
   // Approve prompt
   async approvePrompt(promptId: string, adminId: string) {
     try {
-      const docRef = doc(getFirestoreInstance(), 'prompts', promptId)
+      const docRef = doc(db, 'prompts', promptId)
       await updateDoc(docRef, {
         status: 'approved',
         approvedBy: adminId,
         updatedAt: serverTimestamp()
       })
-
+      
       return { success: true }
     } catch (error) {
       console.error('Error approving prompt:', error)
@@ -128,13 +128,13 @@ export const adminService = {
   // Reject prompt
   async rejectPrompt(promptId: string, adminId: string) {
     try {
-      const docRef = doc(getFirestoreInstance(), 'prompts', promptId)
+      const docRef = doc(db, 'prompts', promptId)
       await updateDoc(docRef, {
         status: 'rejected',
         approvedBy: adminId,
         updatedAt: serverTimestamp()
       })
-
+      
       return { success: true }
     } catch (error) {
       console.error('Error rejecting prompt:', error)
@@ -153,143 +153,95 @@ export const adminService = {
     }
   },
 
-  // Bulk create prompts with smart category matching and batch processing
-  async bulkCreatePrompts(
-    prompts: any[],
-    adminId: string,
-    batchSize = 50,
-    onProgress?: (progress: number, stage: string, details?: any) => void
-  ) {
-    console.log(`Starting bulk upload of ${prompts.length} prompts with batch size ${batchSize}`)
-
-    const stats = {
-      promptsCreated: 0,
-      categoriesCreated: 0,
-      categoriesUpdated: 0
-    }
-
-    const errors: string[] = []
+  // Bulk create prompts with smart category matching
+  async bulkCreatePrompts(prompts: any[], adminId: string) {
+    const batch = writeBatch(getFirestoreInstance())
     const categoryPromptCounts = new Map<string, number>()
 
     // Get all existing categories to standardize names
-    onProgress?.(5, 'Loading existing categories...')
     const allCategories = await categoriesService.getAllCategories()
     console.log(`Bulk upload: Found ${allCategories.length} existing categories in database`)
 
-    // Process prompts in batches
-    const totalBatches = Math.ceil(prompts.length / batchSize)
-    let processedPrompts = 0
-
-    for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
-      const startIdx = batchIndex * batchSize
-      const endIdx = Math.min(startIdx + batchSize, prompts.length)
-      const batchPrompts = prompts.slice(startIdx, endIdx)
-
-      const progress = 10 + ((batchIndex / totalBatches) * 70) // 10-80% for prompt creation
-      onProgress?.(progress, `Processing batch ${batchIndex + 1} of ${totalBatches}...`, { stats, errors })
-
-      try {
-        // Process current batch
-        const batch = writeBatch(getFirestoreInstance())
-        const batchCategoryCounts = new Map<string, number>()
-
-        for (const prompt of batchPrompts) {
-          if (!prompt.title || !prompt.fullPrompt) {
-            console.warn("Skipping prompt with missing title or fullPrompt:", prompt)
-            errors.push(`Skipping prompt: Missing title or fullPrompt for "${prompt.title || 'unnamed'}"`)
-            continue
-          }
-
-          const slug = generateSlug(prompt.title)
-          const newPromptRef = doc(collection(getFirestoreInstance(), "prompts"))
-
-          // Standardize category name by finding existing category with comprehensive matching
-          let category = prompt.category || "Uncategorized"
-          const csvCategoryName = category.toLowerCase().trim()
-
-          // Generate the slug for this CSV category
-          const csvCategorySlug = category
-            .toLowerCase()
-            .replace(/[^a-z0-9 -]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .trim()
-
-          // Try to find existing category by multiple methods
-          const existingCategory = allCategories.find(cat => {
-            const dbCategoryName = cat.name.toLowerCase().trim()
-            const dbCategorySlug = cat.slug.toLowerCase().trim()
-
-            // Method 1: Direct name match (case-insensitive)
-            if (dbCategoryName === csvCategoryName) {
-              return true
-            }
-
-            // Method 2: Slug match (case-insensitive)
-            if (dbCategorySlug === csvCategorySlug) {
-              return true
-            }
-
-            // Method 3: Handle common variations
-            const normalizedDbName = dbCategoryName.replace(/[\s\-_]+/g, '')
-            const normalizedCsvName = csvCategoryName.replace(/[\s\-_]+/g, '')
-
-            if (normalizedDbName === normalizedCsvName) {
-              return true
-            }
-
-            return false
-          })
-
-          if (existingCategory) {
-            category = existingCategory.name // Use the exact name from database
-            console.log(`CSV category "${prompt.category}" matched to existing category "${existingCategory.name}"`)
-          }
-
-          const newPrompt = {
-            title: prompt.title,
-            description: prompt.description || "",
-            category,
-            fullPrompt: prompt.fullPrompt,
-            slug,
-            tags: prompt.tags ? prompt.tags.split(",").map((tag: string) => tag.trim()) : [],
-            images: [],
-            status: 'approved',
-            createdBy: adminId,
-            approvedBy: adminId,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          }
-          batch.set(newPromptRef, newPrompt)
-
-          // Track category counts for this batch
-          batchCategoryCounts.set(category, (batchCategoryCounts.get(category) || 0) + 1)
-          processedPrompts++
-          stats.promptsCreated++
-        }
-
-        // Commit the batch
-        await batch.commit()
-        console.log(`Batch ${batchIndex + 1} completed: ${processedPrompts} prompts processed so far`)
-
-        // Merge batch category counts with total counts
-        for (const [categoryName, count] of batchCategoryCounts) {
-          categoryPromptCounts.set(categoryName, (categoryPromptCounts.get(categoryName) || 0) + count)
-        }
-
-      } catch (batchError) {
-        console.error(`Error processing batch ${batchIndex + 1}:`, batchError)
-        errors.push(`Batch ${batchIndex + 1} failed: ${batchError instanceof Error ? batchError.message : 'Unknown error'}`)
-
-        // Continue with next batch instead of failing entirely
-        onProgress?.(progress, `Error in batch ${batchIndex + 1}, continuing...`, { stats, errors })
+    for (const prompt of prompts) {
+      if (!prompt.title || !prompt.fullPrompt) {
+        console.warn("Skipping prompt with missing title or fullPrompt:", prompt)
         continue
       }
+
+      const slug = generateSlug(prompt.title)
+      const newPromptRef = doc(collection(getFirestoreInstance(), "prompts"))
+
+      // Standardize category name by finding existing category with comprehensive matching
+      let category = prompt.category || "Uncategorized"
+      const csvCategoryName = category.toLowerCase().trim()
+
+      // Generate the slug for this CSV category
+      const csvCategorySlug = category
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+
+      // Try to find existing category by multiple methods:
+      // 1. Exact name match (case-insensitive)
+      // 2. Slug match (case-insensitive)
+      // 3. Similar name variations
+      const existingCategory = allCategories.find(cat => {
+        const dbCategoryName = cat.name.toLowerCase().trim()
+        const dbCategorySlug = cat.slug.toLowerCase().trim()
+
+        // Method 1: Direct name match (case-insensitive)
+        if (dbCategoryName === csvCategoryName) {
+          return true
+        }
+
+        // Method 2: Slug match (case-insensitive)
+        if (dbCategorySlug === csvCategorySlug) {
+          return true
+        }
+
+        // Method 3: Handle common variations
+        // Remove spaces, hyphens, underscores for comparison
+        const normalizedDbName = dbCategoryName.replace(/[\s\-_]+/g, '')
+        const normalizedCsvName = csvCategoryName.replace(/[\s\-_]+/g, '')
+
+        if (normalizedDbName === normalizedCsvName) {
+          return true
+        }
+
+        return false
+      })
+
+      if (existingCategory) {
+        category = existingCategory.name // Use the exact name from database
+        console.log(`CSV category "${prompt.category}" matched to existing category "${existingCategory.name}"`)
+      }
+
+      const newPrompt = {
+        title: prompt.title,
+        description: prompt.description || "",
+        category,
+        fullPrompt: prompt.fullPrompt,
+        slug,
+        tags: prompt.tags ? prompt.tags.split(",").map((tag: string) => tag.trim()) : [],
+        images: [],
+        status: 'approved',
+        createdBy: adminId,
+        approvedBy: adminId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }
+      batch.set(newPromptRef, newPrompt)
+
+      // Track category counts
+      categoryPromptCounts.set(category, (categoryPromptCounts.get(category) || 0) + 1)
     }
 
-    // Update category prompt counts and create categories if they don't exist
-    onProgress?.(85, 'Updating categories...', { stats, errors })
+    await batch.commit()
 
+    // Update category prompt counts and create categories if they don't exist
+    // (allCategories was already fetched above)
     for (const [categoryName, count] of categoryPromptCounts) {
       try {
         // Use the same comprehensive matching logic for category creation
@@ -350,44 +302,29 @@ export const adminService = {
               promptCount: 0
             })
 
-            stats.categoriesCreated++
             console.log(`Created new category "${categoryName}" from CSV upload`)
           } catch (error) {
             console.warn(`Failed to create category "${categoryName}":`, error)
-            errors.push(`Failed to create category "${categoryName}": ${error instanceof Error ? error.message : 'Unknown error'}`)
-
             // If creation fails, try to find if it was created by another process
-            try {
-              const refreshedCategories = await categoriesService.getAllCategories()
-              const laterExistingCategory = refreshedCategories.find(cat =>
-                cat.name.toLowerCase().trim() === csvCategoryName ||
-                cat.slug.toLowerCase().trim() === csvCategorySlug
-              )
-              if (laterExistingCategory) {
-                console.log(`Found category created by another process: "${laterExistingCategory.name}"`)
-                allCategories.push(laterExistingCategory)
-              }
-            } catch (refreshError) {
-              console.warn(`Failed to refresh categories for "${categoryName}":`, refreshError)
+            const refreshedCategories = await categoriesService.getAllCategories()
+            const laterExistingCategory = refreshedCategories.find(cat =>
+              cat.name.toLowerCase().trim() === csvCategoryName ||
+              cat.slug.toLowerCase().trim() === csvCategorySlug
+            )
+            if (laterExistingCategory) {
+              console.log(`Found category created by another process: "${laterExistingCategory.name}"`)
+              allCategories.push(laterExistingCategory)
             }
           }
         } else {
           console.log(`Using existing category "${existingCategory.name}" for CSV category "${categoryName}"`)
-          stats.categoriesUpdated++
         }
 
         await categoriesService.updatePromptCount(categoryName, count)
       } catch (error) {
         console.warn(`Failed to update prompt count for category "${categoryName}":`, error)
-        errors.push(`Failed to update prompt count for "${categoryName}": ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
-
-    onProgress?.(100, 'Upload complete!', { stats, errors })
-
-    console.log(`Bulk upload completed: ${stats.promptsCreated} prompts created, ${stats.categoriesCreated} categories created, ${stats.categoriesUpdated} categories updated`)
-
-    return { success: true, stats, errors }
   },
 
   // Bulk delete prompts with progress tracking
@@ -427,7 +364,7 @@ export const adminService = {
           }
 
           // Add to batch delete
-          const docRef = doc(getFirestoreInstance(), 'prompts', promptId)
+          const docRef = doc(db, 'prompts', promptId)
           batch.delete(docRef)
           currentStep++
         }
@@ -523,11 +460,11 @@ export const adminService = {
             totalPromptCount += dupCategory.promptCount || 0
 
             // Delete the duplicate category
-            batch.delete(doc(getFirestoreInstance(), 'categories', dupCategory.id!))
+            batch.delete(doc(db, 'categories', dupCategory.id!))
           }
 
           // Update the kept category's prompt count
-          batch.update(doc(getFirestoreInstance(), 'categories', keepCategory.id!), {
+          batch.update(doc(db, 'categories', keepCategory.id!), {
             promptCount: totalPromptCount,
             updatedAt: serverTimestamp()
           })

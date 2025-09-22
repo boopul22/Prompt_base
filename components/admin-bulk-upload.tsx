@@ -37,89 +37,17 @@ export function AdminBulkUpload({ onUploadComplete }: { onUploadComplete: () => 
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      delimiter: "", // Auto-detect delimiter (supports comma, tab, etc.)
-      quotes: true, // Handle quoted fields
-      quoteChar: '"',
-      escapeChar: '"',
       complete: async (results) => {
         try {
           const prompts = results.data as any[]
-
-          // Debug: Log parsing info
-          console.log('CSV parsing results:', {
-            delimiter: results.meta.delimiter,
-            fields: results.meta.fields,
-            firstRow: prompts[0],
-            totalRows: prompts.length,
-            rawData: prompts.slice(0, 3) // First 3 rows
-          })
-
-          // Flexible validation for different column names and delimiters
-          if (!prompts.length) {
-            throw new Error("CSV file appears to be empty.")
+          // Basic validation
+          if (!prompts.length || !prompts[0].title || !prompts[0].fullPrompt) {
+            throw new Error("Invalid CSV format. Make sure you have 'title' and 'fullPrompt' columns.")
           }
 
-          // Check if first row has data
-          if (!prompts[0]) {
-            throw new Error("No data rows found in CSV file.")
-          }
-
-          // Check if we have the required data in any column format
-          const firstRow = prompts[0]
-          const fields = results.meta.fields || Object.keys(firstRow)
-
-          // Debug: Log what we found
-          console.log('Available fields:', fields)
-          console.log('First row data:', firstRow)
-
-          // Look for required columns (case-insensitive, flexible matching)
-          const titleField = fields.find(field =>
-            field.toLowerCase().includes('title')
-          )
-          const fullPromptField = fields.find(field =>
-            field.toLowerCase().includes('fullprompt') ||
-            field.toLowerCase().includes('full_prompt') ||
-            field.toLowerCase().includes('prompt')
-          )
-
-          console.log('Found titleField:', titleField)
-          console.log('Found fullPromptField:', fullPromptField)
-
-          if (!titleField || !fullPromptField) {
-            throw new Error(`Required columns not found. Found: ${fields.join(', ')}. Required: title, fullPrompt (or variations)`)
-          }
-
-          // Map fields flexibly and filter valid prompts
-          const validPrompts = prompts
-            .map(row => ({
-              title: row[titleField] || '',
-              description: row[fields.find(f => f.toLowerCase().includes('description'))] || '',
-              category: row[fields.find(f => f.toLowerCase().includes('category'))] || 'Uncategorized',
-              fullPrompt: row[fullPromptField] || '',
-              tags: row[fields.find(f => f.toLowerCase().includes('tags'))] || ''
-            }))
-            .filter(prompt => prompt.title && prompt.fullPrompt)
-
-          if (validPrompts.length === 0) {
-            throw new Error("No valid prompts found in the CSV file.")
-          }
-
-          // Show detected format to user
-          const formatInfo = `Detected format: ${results.meta.delimiter === '\t' ? 'Tab-separated' : 'Comma-separated'} (${validPrompts.length} valid prompts)`
-          console.log(formatInfo)
-
-          // Use the enhanced bulk create with auto-chunking
-          const result = await adminService.bulkCreatePrompts(
-            validPrompts,
-            user.uid,
-            50, // Default batch size
-            (progress, stage) => {
-              console.log(`Progress: ${progress}% - ${stage}`)
-            }
-          )
-
+          await adminService.bulkCreatePrompts(prompts, user.uid)
           toast.dismiss()
-          toast.success(`Bulk upload complete! Created ${result.stats?.promptsCreated || validPrompts.length} prompts. ${formatInfo}`)
+          toast.success("Bulk prompt upload successful!")
           onUploadComplete()
         } catch (error: any) {
           toast.dismiss()
@@ -150,8 +78,7 @@ export function AdminBulkUpload({ onUploadComplete }: { onUploadComplete: () => 
           className="brutalist-border bg-background"
         />
         <p className="text-xs text-muted-foreground">
-          CSV/TSV must have columns: title, description, category, fullPrompt, tags.
-          Supports both comma-separated and tab-separated formats automatically.
+          CSV must have columns: title, description, category, fullPrompt, tags (comma-separated).
         </p>
       </div>
       <Button
