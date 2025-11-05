@@ -6,6 +6,7 @@ import { PromptCard } from "@/components/prompt-card"
 import { CategoryFilter } from "@/components/category-filter"
 import { HeroSection } from "@/components/hero-section"
 import { StructuredData } from "@/components/structured-data"
+import { LoadMoreButton } from "@/components/load-more-button"
 import { promptsService, FirestorePrompt } from "@/lib/firestore-service"
 
 interface SerializedPrompt extends Omit<FirestorePrompt, 'createdAt' | 'updatedAt'> {
@@ -15,63 +16,116 @@ interface SerializedPrompt extends Omit<FirestorePrompt, 'createdAt' | 'updatedA
 import { getCategories } from "@/lib/migrate-categories"
 import { Category } from "@/lib/category-service"
 
+const PROMPTS_PER_PAGE = 9
+
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [prompts, setPrompts] = useState<SerializedPrompt[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0)
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true)
-
-        // Add timeout to prevent hanging
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Loading timeout')), 10000)
-        )
-
-        // Load categories
-        const categoriesPromise = getCategories().catch(error => {
-          console.error('Categories loading failed:', error)
-          return []
-        })
-
-        const dbCategories = await Promise.race([categoriesPromise, timeoutPromise]) as Category[]
-
-        // Load prompts with timeout
-        const promptsPromise = promptsService.getApprovedPrompts(selectedCategory).catch(error => {
-          console.error('Prompts loading failed:', error)
-          return []
-        })
-
-        const approvedPrompts = await Promise.race([promptsPromise, timeoutPromise]) as FirestorePrompt[]
-
-        setCategories(dbCategories)
-
-        // Serialize timestamps before setting state
-        const serializedPrompts = approvedPrompts.map(prompt => ({
-          ...prompt,
-          createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
-            ? prompt.createdAt.toDate().toISOString()
-            : prompt.createdAt || new Date().toISOString(),
-          updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
-            ? prompt.updatedAt.toDate().toISOString()
-            : prompt.updatedAt
-        }))
-        setPrompts(serializedPrompts)
-
-      } catch (error) {
-        console.error('Error loading data:', error)
-        setCategories([])
-        setPrompts([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
+    // Reset pagination when category changes
+    setCurrentPage(0)
+    setPrompts([])
+    setHasMore(true)
+    loadInitialData()
   }, [selectedCategory])
+
+  const loadInitialData = async () => {
+    try {
+      setLoading(true)
+
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Loading timeout')), 10000)
+      )
+
+      // Load categories
+      const categoriesPromise = getCategories().catch(error => {
+        console.error('Categories loading failed:', error)
+        return []
+      })
+
+      const dbCategories = await Promise.race([categoriesPromise, timeoutPromise]) as Category[]
+
+      // Load initial batch of prompts with timeout
+      const promptsPromise = promptsService.getApprovedPrompts(selectedCategory, PROMPTS_PER_PAGE, 0).catch(error => {
+        console.error('Prompts loading failed:', error)
+        return []
+      })
+
+      const approvedPrompts = await Promise.race([promptsPromise, timeoutPromise]) as FirestorePrompt[]
+
+      setCategories(dbCategories)
+
+      // Serialize timestamps before setting state
+      const serializedPrompts = approvedPrompts.map(prompt => ({
+        ...prompt,
+        createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+          ? prompt.createdAt.toDate().toISOString()
+          : prompt.createdAt || new Date().toISOString(),
+        updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+          ? prompt.updatedAt.toDate().toISOString()
+          : prompt.updatedAt
+      }))
+
+      setPrompts(serializedPrompts)
+
+      // Check if there are more prompts to load
+      if (approvedPrompts.length < PROMPTS_PER_PAGE) {
+        setHasMore(false)
+      }
+
+    } catch (error) {
+      console.error('Error loading data:', error)
+      setCategories([])
+      setPrompts([])
+      setHasMore(false)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadMorePrompts = async () => {
+    if (loadingMore || !hasMore) return
+
+    try {
+      setLoadingMore(true)
+
+      const nextPage = currentPage + 1
+      const offset = nextPage * PROMPTS_PER_PAGE
+
+      const newPrompts = await promptsService.getApprovedPrompts(selectedCategory, PROMPTS_PER_PAGE, offset)
+
+      // Serialize timestamps
+      const serializedNewPrompts = newPrompts.map(prompt => ({
+        ...prompt,
+        createdAt: prompt.createdAt && typeof prompt.createdAt === 'object' && 'toDate' in prompt.createdAt
+          ? prompt.createdAt.toDate().toISOString()
+          : prompt.createdAt || new Date().toISOString(),
+        updatedAt: prompt.updatedAt && typeof prompt.updatedAt === 'object' && 'toDate' in prompt.updatedAt
+          ? prompt.updatedAt.toDate().toISOString()
+          : prompt.updatedAt
+      }))
+
+      setPrompts(prev => [...prev, ...serializedNewPrompts])
+      setCurrentPage(nextPage)
+
+      // Check if there are more prompts to load
+      if (newPrompts.length < PROMPTS_PER_PAGE) {
+        setHasMore(false)
+      }
+
+    } catch (error) {
+      console.error('Error loading more prompts:', error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -139,6 +193,8 @@ export default function HomePage() {
             <div className="mb-6 text-sm text-muted-foreground">
               Showing {prompts.length} prompt{prompts.length !== 1 ? 's' : ''}
               {selectedCategory !== "All" && ` in ${selectedCategory}`}
+              {!loading && hasMore && " (scroll down or click Load More for more)"}
+              {!loading && !hasMore && prompts.length > 0 && " (showing all available prompts)"}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -157,6 +213,12 @@ export default function HomePage() {
                 </div>
               </div>
             )}
+
+            <LoadMoreButton
+              onLoadMore={loadMorePrompts}
+              loading={loadingMore}
+              hasMore={hasMore}
+            />
 
             {prompts.length > 0 && (
               <div className="mt-12 md:mt-16">

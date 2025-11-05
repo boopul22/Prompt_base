@@ -39,19 +39,23 @@ export function Footer() {
             </p>
             <div className="flex space-x-3">
               <a
-                href="#"
+                href="https://twitter.com/freepromptbase"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="brutalist-border bg-background text-foreground p-2 brutalist-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
               >
                 <Twitter className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://github.com/freepromptbase"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="brutalist-border bg-background text-foreground p-2 brutalist-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
               >
                 <Github className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="mailto:behindthebrainblog@gmail.com"
                 className="brutalist-border bg-background text-foreground p-2 brutalist-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
               >
                 <Mail className="h-5 w-5" />
@@ -74,6 +78,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/contact" className="text-muted-foreground hover:text-foreground font-medium">
+                  Contact
+                </Link>
+              </li>
+              <li>
                 <Link href="/add-prompt" className="text-muted-foreground hover:text-foreground font-medium">
                   Contribute Prompt
                 </Link>
@@ -81,26 +90,30 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Legal */}
           <div>
-            <h3 className="font-bold text-lg mb-4">CATEGORIES</h3>
+            <h3 className="font-bold text-lg mb-4">LEGAL</h3>
             <ul className="space-y-2">
-              {categories.length > 0 ? (
-                categories.map((category) => (
-                  <li key={category.id}>
-                    <Link
-                      href={`/?category=${encodeURIComponent(category.name)}`}
-                      className="text-muted-foreground hover:text-foreground font-medium"
-                    >
-                      {category.name}
-                    </Link>
-                  </li>
-                ))
-              ) : (
-                <li>
-                  <span className="text-muted-foreground font-medium">Loading...</span>
-                </li>
-              )}
+              <li>
+                <Link href="/privacy-policy" className="text-muted-foreground hover:text-foreground font-medium">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-of-service" className="text-muted-foreground hover:text-foreground font-medium">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/cookie-policy" className="text-muted-foreground hover:text-foreground font-medium">
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/disclaimer" className="text-muted-foreground hover:text-foreground font-medium">
+                  Disclaimer
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -108,6 +121,12 @@ export function Footer() {
         <div className="border-t-4 border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground font-medium">
             © 2024 VIRAL PROMPTS. BUILT WITH NEXT.JS AND BRUTALIST DESIGN.
+          </p>
+          <p className="text-muted-foreground text-sm mt-2">
+            <Link href="/privacy-policy" className="hover:text-foreground">Privacy</Link> •
+            <Link href="/terms-of-service" className="hover:text-foreground mx-1">Terms</Link> •
+            <Link href="/cookie-policy" className="hover:text-foreground mx-1">Cookies</Link> •
+            <Link href="/disclaimer" className="hover:text-foreground ml-1">Disclaimer</Link>
           </p>
         </div>
       </div>

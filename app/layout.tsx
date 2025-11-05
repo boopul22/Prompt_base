@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { CookieConsent } from "@/components/cookie-consent";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -94,6 +95,7 @@ export default function RootLayout({
             <Navbar />
             {children}
             <Footer />
+            <CookieConsent />
             <Toaster />
           </AuthProvider>
         </ThemeProvider>
@@ -113,7 +115,7 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* Google Analytics */}
+        {/* Google Analytics with Consent */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-CP5BGQCVHM"></script>
         <script
           dangerouslySetInnerHTML={{
@@ -122,7 +124,30 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
 
-              gtag('config', 'G-CP5BGQCVHM');
+              // Initialize with consent mode
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'wait_for_update': 500
+              });
+
+              gtag('config', 'G-CP5BGQCVHM', {
+                'anonymize_ip': true
+              });
+
+              // Apply saved preferences if they exist
+              const savedConsent = localStorage.getItem('cookie-consent');
+              if (savedConsent) {
+                const preferences = JSON.parse(savedConsent);
+                gtag('consent', 'update', {
+                  'analytics_storage': preferences.analytics ? 'granted' : 'denied',
+                  'ad_storage': preferences.advertising ? 'granted' : 'denied',
+                  'ad_user_data': preferences.advertising ? 'granted' : 'denied',
+                  'ad_personalization': preferences.advertising ? 'granted' : 'denied',
+                });
+              }
             `,
           }}
         />

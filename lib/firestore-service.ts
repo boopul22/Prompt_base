@@ -65,10 +65,10 @@ export const promptsService = {
   },
 
   // Get all approved prompts
-  async getApprovedPrompts(category?: string) {
+  async getApprovedPrompts(category?: string, limit?: number, offset?: number) {
     try {
       let q;
-      
+
       const db = getFirestoreInstance()
 
       if (category && category !== 'All') {
@@ -85,20 +85,30 @@ export const promptsService = {
           where('status', '==', 'approved')
         )
       }
-      
+
       const snapshot = await getDocs(q)
-      const prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
-      
+      let prompts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as FirestorePrompt))
+
       // Sort on client side instead of server side to avoid index requirements
-      return prompts.sort((a, b) => {
-        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt 
-          ? a.createdAt.toDate().getTime() 
+      prompts = prompts.sort((a, b) => {
+        const aTime = a.createdAt && typeof a.createdAt === 'object' && 'toDate' in a.createdAt
+          ? a.createdAt.toDate().getTime()
           : new Date().getTime()
-        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt 
-          ? b.createdAt.toDate().getTime() 
+        const bTime = b.createdAt && typeof b.createdAt === 'object' && 'toDate' in b.createdAt
+          ? b.createdAt.toDate().getTime()
           : new Date().getTime()
         return bTime - aTime // Descending order (newest first)
       })
+
+      // Apply pagination if limit and offset are provided
+      if (typeof offset === 'number' && offset > 0) {
+        prompts = prompts.slice(offset)
+      }
+      if (typeof limit === 'number' && limit > 0) {
+        prompts = prompts.slice(0, limit)
+      }
+
+      return prompts
     } catch (error) {
       console.error('Error fetching approved prompts:', error)
       return []
