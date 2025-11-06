@@ -85,6 +85,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-7803867089582138" />
+      </head>
       <body className={GeistSans.className}>
         <ThemeProvider
           attribute="class"
