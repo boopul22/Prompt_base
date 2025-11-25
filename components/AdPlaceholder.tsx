@@ -14,18 +14,24 @@ export function AdPlaceholder({
   label = 'Ad Space'
 }: AdPlaceholderProps) {
   return (
-    <a
-      href="https://otieu.com/4/10233475"
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`flex items-center justify-center bg-muted/50 border-2 border-dashed border-muted-foreground/20 rounded-md hover:bg-muted/70 transition-colors cursor-pointer ${className}`}
+    <div
+      className={`relative overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/20 rounded-md ${className}`}
       style={{ width, height }}
     >
-      <div className="text-center">
+      <iframe
+        src="https://otieu.com/4/10233475"
+        title={label}
+        width="100%"
+        height="100%"
+        className="absolute inset-0 border-0"
+        sandbox="allow-scripts allow-popups allow-forms"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10">
         <span className="text-muted-foreground font-medium text-sm uppercase tracking-widest">
           {label}
         </span>
       </div>
-    </a>
+    </div>
   );
 }
