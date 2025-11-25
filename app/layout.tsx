@@ -87,7 +87,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="google-adsense-account" content="ca-pub-7803867089582138" />
-        <meta name="monetag" content="ed656d752ebff69775306766db127896">
+        <meta name="monetag" content="ed656d752ebff69775306766db127896" />
       </head>
       <body className={GeistSans.className}>
         <ThemeProvider
