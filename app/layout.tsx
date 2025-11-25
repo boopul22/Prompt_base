@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "Access thousands of free AI prompts for ChatGPT, Claude, Gemini, and all AI models. Download tested prompts for content creation, marketing, SEO, and business growth.",
   keywords: [
     "free AI prompts",
-    "free ChatGPT prompts", 
+    "free ChatGPT prompts",
     "Claude prompts",
     "Gemini prompts",
     "prompt engineering",
@@ -153,6 +153,12 @@ export default function RootLayout({
                 });
               }
             `,
+          }}
+        />
+        {/* PropellerAds Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='10233468',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
           }}
         />
       </body>

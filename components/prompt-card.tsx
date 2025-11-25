@@ -93,7 +93,7 @@ export function PromptCard({ prompt }: PromptCardProps) {
 
         <div className="text-xs md:text-sm text-muted-foreground">
           Added {
-            prompt.createdAt 
+            prompt.createdAt
               ? new Date(prompt.createdAt as string).toLocaleDateString()
               : 'Recently'
           }
