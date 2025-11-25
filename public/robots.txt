@@ -1,0 +1,62 @@
+# Robots.txt for Free Prompt Base
+# Updated: January 16, 2025
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://freepromptbase.com/sitemap.xml
+
+# Allow Googlebot to access necessary resources for rendering
+User-agent: Googlebot
+Allow: /
+Allow: /_next/static/
+Allow: /_next/image
+Allow: /*.js
+Allow: /*.css
+Disallow: /admin/
+Disallow: /api/
+Disallow: /profile/
+Disallow: /add-prompt/
+
+# Allow Bingbot to access necessary resources
+User-agent: Bingbot
+Allow: /
+Allow: /_next/static/
+Allow: /_next/image
+Allow: /*.js
+Allow: /*.css
+Disallow: /admin/
+Disallow: /api/
+Disallow: /profile/
+Disallow: /add-prompt/
+
+# Block private areas for all other bots
+Disallow: /admin/
+Disallow: /api/
+Disallow: /profile/
+Disallow: /add-prompt/
+Disallow: /_next/server/
+
+# Allow search engines to crawl main content
+Allow: /chatgpt-prompts
+Allow: /marketing
+Allow: /seo-prompts
+Allow: /prompt-engineering
+Allow: /prompts/
+Allow: /blog/
+Allow: /about
+Allow: /contact
+
+# Block specific bots that don't follow rules
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
